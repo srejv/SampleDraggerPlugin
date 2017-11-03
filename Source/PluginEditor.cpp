@@ -132,9 +132,11 @@ void SampleDraggerPluginAudioProcessorEditor::generateFinalBuffer() {
 	specialBufferThumbnail->reset(2, processor.getSampleRate());
 
 	ScopedPointer<AudioSampleBuffer> workbuffer = new AudioSampleBuffer(2, length);
-	ScopedPointer<AudioSampleBuffer> xtrabuffer = new AudioSampleBuffer(2, length);
+	xtrabuffer = new AudioSampleBuffer(2, length);
+	
 	workbuffer->clear();
 	xtrabuffer->clear();
+
 	for (auto s : samples) {
 		auto startPos = static_cast<int>(s->getSampleStartPosition() - min);
 		for (int i = 0; i < s->getNumChannels(); ++i) {
@@ -145,9 +147,10 @@ void SampleDraggerPluginAudioProcessorEditor::generateFinalBuffer() {
 				s->getSource(), i, 0,
 				s->getSampleLength());
 		}
-
 	}
+
 	specialBufferThumbnail->addBlock(0, *xtrabuffer, 0, workbuffer->getNumSamples());
+
 	processor.swapBuffer(workbuffer.release());
 }
 

@@ -82,22 +82,24 @@ int SampleDraggerPluginAudioProcessor::getCurrentProgram()
 
 void SampleDraggerPluginAudioProcessor::setCurrentProgram (int index)
 {
+	ignoreUnused(index);
 }
 
 const String SampleDraggerPluginAudioProcessor::getProgramName (int index)
 {
+	ignoreUnused(index);
     return {};
 }
 
 void SampleDraggerPluginAudioProcessor::changeProgramName (int index, const String& newName)
 {
+	ignoreUnused(index, newName);
 }
 
 //==============================================================================
 void SampleDraggerPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+	ignoreUnused(sampleRate, samplesPerBlock);
 }
 
 void SampleDraggerPluginAudioProcessor::releaseResources()
@@ -209,6 +211,7 @@ AudioProcessorEditor* SampleDraggerPluginAudioProcessor::createEditor()
 //==============================================================================
 void SampleDraggerPluginAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
+	ignoreUnused(destData);
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
@@ -216,6 +219,7 @@ void SampleDraggerPluginAudioProcessor::getStateInformation (MemoryBlock& destDa
 
 void SampleDraggerPluginAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
+	ignoreUnused(data, sizeInBytes);
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
 }
