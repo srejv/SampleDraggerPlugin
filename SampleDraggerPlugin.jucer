@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="kYrFHr" name="SampleDraggerPlugin" displaySplashScreen="0"
+              reportAppUsage="0" splashScreenColour="Dark" projectType="audioplug"
+              version="1.0.0" bundleIdentifier="se.srejv.SampleDraggerPlugin"
+              includeBinaryInAppConfig="1" cppLanguageStandard="11" companyCopyright=""
+              buildVST="1" buildVST3="0" buildAU="1" buildAUv3="0" buildRTAS="0"
+              buildAAX="0" buildStandalone="1" enableIAA="0" pluginName="SampleDraggerPlugin"
+              pluginDesc="SampleDraggerPlugin" pluginManufacturer="srejv" pluginManufacturerCode="Manu"
+              pluginCode="Kyrf" pluginChannelConfigs="{0,2}" pluginIsSynth="1"
+              pluginWantsMidiIn="1" pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0"
+              pluginEditorRequiresKeys="0" pluginAUExportPrefix="SampleDraggerPluginAU"
+              pluginRTASCategory="" aaxIdentifier="se.srejv.SampleDraggerPlugin"
+              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="5.2.0"
+              companyName="Meh">
+  <MAINGROUP id="JGg8o7" name="SampleDraggerPlugin">
+    <GROUP id="{D4526B0B-85AC-6D79-D59B-4D2EBBA0535C}" name="Source">
+      <FILE id="fJkHtd" name="AudioFileLoader.cpp" compile="1" resource="0"
+            file="Source/AudioFileLoader.cpp"/>
+      <FILE id="AHv58s" name="Sample.cpp" compile="1" resource="0" file="Source/Sample.cpp"/>
+      <FILE id="hwBb5q" name="ScaleComponent.cpp" compile="1" resource="0"
+            file="Source/ScaleComponent.cpp"/>
+      <FILE id="NIya6k" name="AudioFileLoader.h" compile="0" resource="0"
+            file="Source/AudioFileLoader.h"/>
+      <FILE id="c96Z6H" name="DataModel.h" compile="0" resource="0" file="Source/DataModel.h"/>
+      <FILE id="Wqil1A" name="Sample.h" compile="0" resource="0" file="Source/Sample.h"/>
+      <FILE id="tBfGCv" name="ScaleComponent.h" compile="0" resource="0"
+            file="Source/ScaleComponent.h"/>
+      <FILE id="m4W3iW" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="RQku7k" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="tfNpVs" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="C8907x" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <VS2017 targetFolder="Builds/VisualStudio2017">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
+                       debugInformationFormat="ProgramDatabase" enablePluginBinaryCopyStep="0"
+                       linkTimeOptimisation="0" isDebug="1" optimisation="1" targetName="SampleDraggerPlugin"/>
+        <CONFIGURATION name="Release" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
+                       debugInformationFormat="ProgramDatabase" enablePluginBinaryCopyStep="0"
+                       linkTimeOptimisation="1" isDebug="0" optimisation="3" targetName="SampleDraggerPlugin"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_video" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE/modules"/>
+      </MODULEPATHS>
+    </VS2017>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_video" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
+</JUCERPROJECT>
