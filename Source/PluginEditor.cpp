@@ -97,12 +97,16 @@ void SampleDraggerPluginAudioProcessorEditor::resized()
 
 void SampleDraggerPluginAudioProcessorEditor::drawWaveform(Graphics& g, const Rectangle<int>& thumbnailBounds)
 {
-	g.setColour(Colour(50, 50, 50));
+	const auto colourScheme(static_cast<LookAndFeel_V4&>(getLookAndFeel()).getCurrentColourScheme());
+	g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::widgetBackground));
 	g.fillRect(thumbnailBounds);
+	g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::outline));
+	g.drawRect(thumbnailBounds, 1);
+
 	double startTime = 0.0f;
 	double endTime = processor.getNumSamples() / processor.getSampleRate();
 	float verticalZoom = 1.0f;
-	g.setColour(Colours::red);
+	g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::defaultFill));
 	specialBufferThumbnail->drawChannels(g, thumbnailBounds, startTime, endTime, verticalZoom);
 }
 void SampleDraggerPluginAudioProcessorEditor::sliderValueChanged(Slider* slider)
