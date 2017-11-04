@@ -2,7 +2,7 @@
   ==============================================================================
 
     SampleComponent.h
-    Created: 4 Nov 2017 6:38:45am
+    Created: 4 Nov 2017 1:09:23pm
     Author:  srejv
 
   ==============================================================================
@@ -10,90 +10,38 @@
 
 #pragma once
 
-	class SampleComponent : public Component
-	{
-	public:
-		SampleComponent() {}
+#include "JuceHeader.h"
 
-		void setThumbnail(AudioThumbnail* newThumbnail) {
-			thumbnail = newThumbnail;
-		}
+class SampleComponent : public Component
+{
+public:
+	SampleComponent();
 
-		int getIndex() { return samplePoolIndex; }
-		void setIndex(int newIndex) { samplePoolIndex = newIndex; }
+	void paint(Graphics& g) override;
 
-		void setSampleRate(double newSampleRate) {
-			sampleRate = newSampleRate;
-		}
+	void setThumbnail(AudioThumbnail* newThumbnail);
+	void setIndex(int newIndex);
+	void setSampleRate(double newSampleRate);
+	void setNumSamples(int numSamples);
+	void setPixelScale(double pts);
 
-		void setNumSamples(int numSamples) {
-			nsamples = numSamples;
-		}
+	int getIndex();
+	int getSampleStartPosition() const;
+	int getSampleLength() const;
+	int getNumChannels();
 
-		
-		void setPixelScale(double pts) {
-			pixelToSeconds = pts;
-			
-			double width = (nsamples / sampleRate) * pixelToSeconds;
-			setSize(roundToInt(width), 80);
+private:
+	double sampleRate = 48000.0;
+	ComponentDragger myDragger;
 
-			setTopLeftPosition(roundToInt(position * pixelToSeconds), getY());
-			repaint();
-		}
+	void mouseDown(const MouseEvent& e) override;
+	void mouseDrag(const MouseEvent& e) override;
 
-		void paint(Graphics& g) override {
-			const auto colourScheme(static_cast<LookAndFeel_V4&>(getLookAndFeel()).getCurrentColourScheme());
-			
-			g.fillAll(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::widgetBackground));
-			
-			g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::outline));
-			g.drawRect(getLocalBounds());
-			
-			g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::defaultText));
-			g.drawText(getName(), getLocalBounds(), Justification::centred);
+	ScopedPointer<AudioThumbnail> thumbnail;
+	int samplePoolIndex;
 
-			if (thumbnail != nullptr) {
-				const double startTime = 0.0f;
-				const double endTime = thumbnail->getTotalLength();
-				float verticalZoom = 1.0f;
-				g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::defaultFill));
-				thumbnail->drawChannels(g, getLocalBounds(), 
-					startTime, endTime, verticalZoom);
-			}
-		}
+	double position = 0;
+	int nsamples = 0;
 
-		int getSampleStartPosition() const {
-			return roundToInt(position * sampleRate);
-		}
-
-		int getSampleLength() const {
-			return nsamples;
-		}
-
-		int getNumChannels() {
-			return thumbnail->getNumChannels();
-		}
-
-	private:
-		double sampleRate = 48000.0;
-		ComponentDragger myDragger;
-
-		void mouseDown(const MouseEvent& e) override
-		{
-			myDragger.startDraggingComponent(this, e);
-		}
-
-		void mouseDrag(const MouseEvent& e) override
-		{
-			myDragger.dragComponent(this, e, nullptr);
-			position = getX() / pixelToSeconds;
-		}
-
-		ScopedPointer<AudioThumbnail> thumbnail;
-		int samplePoolIndex;
-
-		double position = 0;
-		int nsamples = 0;
-
-		double pixelToSeconds = 100.0f;
-	};
+	double pixelToSeconds = 100.0f;
+};

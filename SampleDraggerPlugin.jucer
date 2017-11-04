@@ -17,6 +17,8 @@
     <GROUP id="{D4526B0B-85AC-6D79-D59B-4D2EBBA0535C}" name="Source">
       <GROUP id="{DE99F680-2232-B0A6-00BF-881FFA397D35}" name="Components">
         <FILE id="aKruud" name="MyLookAndFeel.h" compile="0" resource="0" file="Source/Components/MyLookAndFeel.h"/>
+        <FILE id="kailjc" name="SampleComponent.cpp" compile="1" resource="0"
+              file="Source/Components/SampleComponent.cpp"/>
         <FILE id="lGlgKk" name="SampleComponent.h" compile="0" resource="0"
               file="Source/Components/SampleComponent.h"/>
         <FILE id="fVE4W4" name="ScaleComponent.cpp" compile="1" resource="0"
