@@ -15,24 +15,35 @@
               companyName="Meh">
   <MAINGROUP id="JGg8o7" name="SampleDraggerPlugin">
     <GROUP id="{D4526B0B-85AC-6D79-D59B-4D2EBBA0535C}" name="Source">
-      <FILE id="fJkHtd" name="AudioFileLoader.cpp" compile="1" resource="0"
-            file="Source/AudioFileLoader.cpp"/>
-      <FILE id="AHv58s" name="Sample.cpp" compile="1" resource="0" file="Source/Sample.cpp"/>
-      <FILE id="hwBb5q" name="ScaleComponent.cpp" compile="1" resource="0"
-            file="Source/ScaleComponent.cpp"/>
-      <FILE id="NIya6k" name="AudioFileLoader.h" compile="0" resource="0"
-            file="Source/AudioFileLoader.h"/>
-      <FILE id="c96Z6H" name="DataModel.h" compile="0" resource="0" file="Source/DataModel.h"/>
-      <FILE id="Wqil1A" name="Sample.h" compile="0" resource="0" file="Source/Sample.h"/>
-      <FILE id="tBfGCv" name="ScaleComponent.h" compile="0" resource="0"
-            file="Source/ScaleComponent.h"/>
+      <GROUP id="{DE99F680-2232-B0A6-00BF-881FFA397D35}" name="Components">
+        <FILE id="aKruud" name="MyLookAndFeel.h" compile="0" resource="0" file="Source/Components/MyLookAndFeel.h"/>
+        <FILE id="G7lAxf" name="Sample.cpp" compile="1" resource="0" file="Source/Components/Sample.cpp"/>
+        <FILE id="YvYFLi" name="Sample.h" compile="0" resource="0" file="Source/Components/Sample.h"/>
+        <FILE id="lGlgKk" name="SampleComponent.h" compile="0" resource="0"
+              file="Source/Components/SampleComponent.h"/>
+        <FILE id="fVE4W4" name="ScaleComponent.cpp" compile="1" resource="0"
+              file="Source/Components/ScaleComponent.cpp"/>
+        <FILE id="OT6BKU" name="ScaleComponent.h" compile="0" resource="0"
+              file="Source/Components/ScaleComponent.h"/>
+      </GROUP>
+      <GROUP id="{B9C1C7A6-F940-0511-1B96-43ED75A3777D}" name="Helpers">
+        <FILE id="VjQM7N" name="AudioFileLoader.cpp" compile="1" resource="0"
+              file="Source/Helpers/AudioFileLoader.cpp"/>
+        <FILE id="YJAVeV" name="AudioFileLoader.h" compile="0" resource="0"
+              file="Source/Helpers/AudioFileLoader.h"/>
+        <FILE id="Y1fzmw" name="SamplePool.h" compile="0" resource="0" file="Source/Helpers/SamplePool.h"/>
+      </GROUP>
+      <GROUP id="{27950F9F-A29B-FB92-A162-9D4CB843F3D8}" name="Models">
+        <FILE id="OlfQGT" name="MySample.h" compile="0" resource="0" file="Source/Models/MySample.h"/>
+        <FILE id="Jy4JTT" name="SampleData.h" compile="0" resource="0" file="Source/Models/SampleData.h"/>
+      </GROUP>
+      <FILE id="tfNpVs" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="C8907x" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
       <FILE id="m4W3iW" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="RQku7k" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
-      <FILE id="tfNpVs" name="PluginEditor.cpp" compile="1" resource="0"
-            file="Source/PluginEditor.cpp"/>
-      <FILE id="C8907x" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>

@@ -16,15 +16,15 @@
 SampleDraggerPluginAudioProcessorEditor::SampleDraggerPluginAudioProcessorEditor (SampleDraggerPluginAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
-	addAndMakeVisible(addSample = new TextButton("Add Sample"));
+	addAndMakeVisible(addSample = new TextButton("Load file -> Sound Pool"));
 	addSample->addListener(this);
 
-	addAndMakeVisible(saveGenerated = new TextButton("Save Generated"));
+	addAndMakeVisible(saveGenerated = new TextButton("Save Generated Sample"));
 	saveGenerated->addListener(this);
 
 	addAndMakeVisible(pixelsToSeconds);
-	pixelsToSeconds.setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxRight, true, 80, 20);
-	pixelsToSeconds.setRange(2.0f, 12000.0f);
+	pixelsToSeconds.setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxRight, false, 80, 20);
+	pixelsToSeconds.setRange(2.0f, 2000.0f);
 	pixelsToSeconds.setTextValueSuffix("px/s");
 	pixelsToSeconds.setValue(100.0f);
 	pixelsToSeconds.addListener(this);
@@ -38,6 +38,13 @@ SampleDraggerPluginAudioProcessorEditor::SampleDraggerPluginAudioProcessorEditor
 	playButton->setClickingTogglesState(true);
 	playButton->addListener(this);
 
+	addAndMakeVisible(comboSampleList);
+	comboSampleList.setTextWhenNothingSelected("No sample");
+	comboSampleList.setTextWhenNoChoicesAvailable("Pool is empty");
+
+	addAndMakeVisible(btnAddSprite = new TextButton("Add Sample"));
+	btnAddSprite->addListener(this);
+
 	startTimer(1);
 
 	setSize(800, 600);
@@ -48,7 +55,7 @@ SampleDraggerPluginAudioProcessorEditor::~SampleDraggerPluginAudioProcessorEdito
 	specialBufferThumbnail = nullptr;
 
 	removeAllChildren();
-	samples.clear(true);
+	sampleComponents.clear(true);
 }
 
 //==============================================================================
@@ -58,11 +65,7 @@ void SampleDraggerPluginAudioProcessorEditor::paint (Graphics& g)
 	g.fillAll(Colour(30, 30, 30));
 
 	g.setColour(Colour(120, 120, 120));
-	auto area(getLocalBounds().removeFromRight(200));
-	//for (auto b : sampleBuffers) {
-	//g.drawText(b->fileName, area.removeFromTop(20), Justification::centredLeft);
-	//}
-
+	auto area(getLocalBounds().removeFromRight(200).withTrimmedTop(60));
 	if (specialBufferThumbnail != nullptr) {
 		double width = (processor.getNumSamples() / processor.getSampleRate()) * pixelsToSeconds.getValue();
 		drawWaveform(g, getLocalBounds().removeFromBottom(100).withTrimmedBottom(20).withWidth(roundToInt(width)));
@@ -71,17 +74,22 @@ void SampleDraggerPluginAudioProcessorEditor::paint (Graphics& g)
 
 void SampleDraggerPluginAudioProcessorEditor::resized()
 {
-	auto row(getLocalBounds().removeFromBottom(20));
-	addSample->setBounds(row.removeFromLeft(100));
-	generateWaveform->setBounds(row.removeFromRight(100));
-	pixelsToSeconds.setBounds(row);
+	auto area(getLocalBounds());
+	
+	auto right = area.removeFromRight(100).withTrimmedBottom(20).withTrimmedBottom(20);
+	saveGenerated->setBounds(right.removeFromTop(20));
+	right.removeFromTop(20);
+	addSample->setBounds(right.removeFromTop(100));
+	right.removeFromTop(20);
+	comboSampleList.setBounds(right.removeFromTop(20));
+	btnAddSprite->setBounds(right.removeFromTop(20));
+	right.removeFromTop(20);
+	generateWaveform->setBounds(right.removeFromTop(20));
+	playButton->setBounds(right.removeFromTop(20));
 
-	saveGenerated->setBounds(getLocalBounds().removeFromTop(20).removeFromRight(100).translated(0, 20));
-	playButton->setBounds(getLocalBounds().removeFromBottom(20).removeFromRight(100).translated(0, -20));
-
-	scaleComponent.setBounds(getLocalBounds().removeFromTop(20));
+	pixelsToSeconds.setBounds(area.removeFromBottom(20));
+	scaleComponent.setBounds(area.removeFromTop(20));
 }
-
 
 void SampleDraggerPluginAudioProcessorEditor::drawWaveform(Graphics& g, const Rectangle<int>& thumbnailBounds)
 {
@@ -93,18 +101,18 @@ void SampleDraggerPluginAudioProcessorEditor::drawWaveform(Graphics& g, const Re
 	g.setColour(Colours::red);
 	specialBufferThumbnail->drawChannels(g, thumbnailBounds, startTime, endTime, verticalZoom);
 }
-void SampleDraggerPluginAudioProcessorEditor::sliderValueChanged(Slider* slider) 
+void SampleDraggerPluginAudioProcessorEditor::sliderValueChanged(Slider* slider)
 {
-	for (auto s : samples) {
+	for (auto s : sampleComponents) {
 		s->setPixelScale(slider->getValue());
 	}
 	scaleComponent.setPixelToSeconds(slider->getValue());
 };
 
-void SampleDraggerPluginAudioProcessorEditor::buttonClicked(Button* btn) 
+void SampleDraggerPluginAudioProcessorEditor::buttonClicked(Button* btn)
 {
 	if (btn == addSample) {
-		openButtonClicked();
+		openButtonClickedSoundPool();
 	}
 	if (btn == generateWaveform) {
 		generateFinalBuffer();
@@ -115,12 +123,15 @@ void SampleDraggerPluginAudioProcessorEditor::buttonClicked(Button* btn)
 	if (btn == playButton) {
 		processor.setPlaying(playButton->getToggleState());
 	}
+	if (btn == btnAddSprite) {
+		addSpriteButtonClicked();
+	}
 }
 
 void SampleDraggerPluginAudioProcessorEditor::generateFinalBuffer() {
 	int min = INT32_MAX;
 	int max = 0;
-	for (auto s : samples) {
+	for (auto s : sampleComponents) {
 		auto start = s->getSampleStartPosition();
 		auto len = s->getSampleLength();
 		if (start < min) { min = start; }
@@ -133,19 +144,24 @@ void SampleDraggerPluginAudioProcessorEditor::generateFinalBuffer() {
 
 	ScopedPointer<AudioSampleBuffer> workbuffer = new AudioSampleBuffer(2, length);
 	xtrabuffer = new AudioSampleBuffer(2, length);
-	
+
 	workbuffer->clear();
 	xtrabuffer->clear();
 
-	for (auto s : samples) {
+	for (auto s : sampleComponents) {
+		int index = s->getIndex();
+		auto& source(processor.getSamplePool().getSample(index));
+		if (source.name == String::empty) continue;
+
 		auto startPos = static_cast<int>(s->getSampleStartPosition() - min);
+		
 		for (int i = 0; i < s->getNumChannels(); ++i) {
 			workbuffer->addFrom(i, startPos,
-				s->getSource(), i, 0,
-				s->getSampleLength());
+				source.buffer, i, 0,
+				source.buffer.getNumSamples());
 			xtrabuffer->addFrom(i, startPos,
-				s->getSource(), i, 0,
-				s->getSampleLength());
+				source.buffer, i, 0,
+				source.buffer.getNumSamples());
 		}
 	}
 
@@ -156,10 +172,12 @@ void SampleDraggerPluginAudioProcessorEditor::generateFinalBuffer() {
 
 void SampleDraggerPluginAudioProcessorEditor::openButtonClicked()
 {
+#if 0
 	ScopedPointer<MySample> mySample = loader.loadAudioFile();
 	if (mySample == nullptr) return;
 	addAndMakeVisible(samples.add(new Sample(mySample.release())));
 	samples.getLast()->setPixelScale(pixelsToSeconds.getValue());
+#endif
 }
 
 void SampleDraggerPluginAudioProcessorEditor::saveButtonClicked()
@@ -187,4 +205,32 @@ void SampleDraggerPluginAudioProcessorEditor::saveButtonClicked()
 			}
 		}
 	}
+}
+
+void SampleDraggerPluginAudioProcessorEditor::openButtonClickedSoundPool() {
+	int sampleIndex = loader.loadAudioFileIntoPool(processor.getSamplePool());
+	comboSampleList.addItem(processor.getSamplePool().getSample(sampleIndex).name, sampleIndex + 1);
+}
+
+void SampleDraggerPluginAudioProcessorEditor::addSpriteButtonClicked() {
+	auto index = comboSampleList.getSelectedId() - 1;
+	addFromIndex(index);
+}
+
+void SampleDraggerPluginAudioProcessorEditor::addFromIndex(int sampleIndex) {
+	if (sampleIndex < 0) return; // Couldn't load for some readon
+	auto s = processor.getSamplePool().getSample(sampleIndex);
+
+	ScopedPointer<AudioThumbnail> t = loader.createThumbnail();
+	t->reset(2, processor.getSampleRate());
+	t->addBlock(0, s.buffer, 0, s.buffer.getNumSamples());
+
+	ScopedPointer<SampleComponent> newsample = new SampleComponent();
+	newsample->setThumbnail(t.release());
+	newsample->setName(s.name);
+	newsample->setIndex(sampleIndex);
+	newsample->setNumSamples(s.buffer.getNumSamples());
+	newsample->setPixelScale(pixelsToSeconds.getValue());
+
+	addAndMakeVisible(sampleComponents.add(newsample.release()));
 }

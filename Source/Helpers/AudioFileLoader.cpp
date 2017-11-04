@@ -36,7 +36,7 @@ MySample* AudioFileLoader::loadAudioFile() {
         mySample->position = 0;
         mySample->numChannels = reader->numChannels;
         mySample->thumbnail = createThumbnail();
-        mySample->thumbnail->setSource(new FileInputSource(file));
+        mySample->thumbnail->addBlock(0, mySample->fileBuffer, 0, mySample->fileBuffer.getNumSamples());
         return mySample.release();
       }
       else

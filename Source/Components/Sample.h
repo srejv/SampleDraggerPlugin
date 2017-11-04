@@ -11,7 +11,7 @@
 #pragma once
 
 #include "JuceHeader.h"
-#include "DataModel.h"
+#include "../Models/MySample.h"
 
 class FadeOverlayComponent : public Component {
 

@@ -7,3 +7,4 @@ struct MySample {
 	AudioSampleBuffer fileBuffer;
 	ScopedPointer<AudioThumbnail> thumbnail;
 };
+

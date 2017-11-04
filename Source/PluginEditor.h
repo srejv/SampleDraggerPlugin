@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
@@ -15,29 +5,24 @@
 
 #include <mutex>
 
-#include "DataModel.h"
-#include "Sample.h"
-#include "AudioFileLoader.h"
-#include "ScaleComponent.h"
+#include "Helpers/AudioFileLoader.h"
 
-//==============================================================================
-/**
-*/
-class SampleDraggerPluginAudioProcessorEditor  
+#include "Components/ScaleComponent.h"
+#include "Components/SampleComponent.h"
+
+class SampleDraggerPluginAudioProcessorEditor
 	: public AudioProcessorEditor, public Button::Listener, public Slider::Listener, public Timer
 {
 public:
-    SampleDraggerPluginAudioProcessorEditor (SampleDraggerPluginAudioProcessor&);
-    ~SampleDraggerPluginAudioProcessorEditor();
+	SampleDraggerPluginAudioProcessorEditor (SampleDraggerPluginAudioProcessor&);
+	~SampleDraggerPluginAudioProcessorEditor();
 
-    //==============================================================================
-    void paint (Graphics&) override;
-    void resized() override;
+	//==============================================================================
+	void paint (Graphics&) override;
+	void resized() override;
 
-	void timerCallback() override
-	{
-		repaint();
-	}
+	// Is this really needed?
+	void timerCallback() override { repaint(); }
 
 private:
 	void drawWaveform(Graphics& g, const Rectangle<int>& thumbnailBounds);
@@ -47,14 +32,22 @@ private:
 
 	void generateFinalBuffer();
 
-	void openButtonClicked();
+	void addSpriteButtonClicked();
+	void addFromIndex(int sampleIndex);
+
+	void openButtonClickedSoundPool();
 	void saveButtonClicked();
 
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
-    SampleDraggerPluginAudioProcessor& processor;
+	// This reference is provided as a quick way for your editor to
+	// access the processor object that created it.
+	SampleDraggerPluginAudioProcessor& processor;
 	ScopedPointer<TextButton> addSample, generateWaveform, saveGenerated, playButton;
-	OwnedArray<Sample> samples;
+	//OwnedArray<Sample> samples;
+	OwnedArray<SampleComponent> sampleComponents;
+
+	ComboBox comboSampleList;
+	ScopedPointer<TextButton> btnAddSprite;
+
 	ScopedPointer<AudioThumbnail> specialBufferThumbnail;
 	AudioFileLoader loader;
 
@@ -63,5 +56,5 @@ private:
 
 	ScopedPointer<AudioSampleBuffer> xtrabuffer;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SampleDraggerPluginAudioProcessorEditor)
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SampleDraggerPluginAudioProcessorEditor)
 };
