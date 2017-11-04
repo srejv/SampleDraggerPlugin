@@ -12,6 +12,9 @@ double ScaleComponent::getPixelToSeconds() const {
 }
 
 void ScaleComponent::paint(Graphics& g) {
+	const auto colourScheme(static_cast<LookAndFeel_V4&>(getLookAndFeel()).getCurrentColourScheme());
+	colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::menuBackground);
+
   // Mark every second?
   auto area(getLocalBounds());
 

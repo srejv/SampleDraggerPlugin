@@ -42,15 +42,21 @@
 		}
 
 		void paint(Graphics& g) override {
-			g.fillAll(Colour(50, 50, 50));
-			g.setColour(Colour(200, 200, 200));
+			const auto colourScheme(static_cast<LookAndFeel_V4&>(getLookAndFeel()).getCurrentColourScheme());
+			
+			g.fillAll(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::widgetBackground));
+			
+			g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::outline));
+			g.drawRect(getLocalBounds());
+			
+			g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::defaultText));
 			g.drawText(getName(), getLocalBounds(), Justification::centred);
 
 			if (thumbnail != nullptr) {
 				const double startTime = 0.0f;
 				const double endTime = thumbnail->getTotalLength();
 				float verticalZoom = 1.0f;
-				g.setColour(Colours::red);
+				g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::defaultFill));
 				thumbnail->drawChannels(g, getLocalBounds(), 
 					startTime, endTime, verticalZoom);
 			}

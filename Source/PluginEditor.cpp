@@ -16,6 +16,8 @@
 SampleDraggerPluginAudioProcessorEditor::SampleDraggerPluginAudioProcessorEditor (SampleDraggerPluginAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
+	setLookAndFeel(&lookAndFeel);
+
 	addAndMakeVisible(addSample = new TextButton("Load file -> Sound Pool"));
 	addSample->addListener(this);
 
@@ -52,6 +54,8 @@ SampleDraggerPluginAudioProcessorEditor::SampleDraggerPluginAudioProcessorEditor
 
 SampleDraggerPluginAudioProcessorEditor::~SampleDraggerPluginAudioProcessorEditor()
 {
+	stopTimer();
+	setLookAndFeel(nullptr);
 	specialBufferThumbnail = nullptr;
 
 	removeAllChildren();
@@ -62,7 +66,7 @@ SampleDraggerPluginAudioProcessorEditor::~SampleDraggerPluginAudioProcessorEdito
 void SampleDraggerPluginAudioProcessorEditor::paint (Graphics& g)
 {
 	// (Our component is opaque, so we must completely fill the background with a solid colour)
-	g.fillAll(Colour(30, 30, 30));
+	g.fillAll(findColour(ResizableWindow::backgroundColourId));
 
 	g.setColour(Colour(120, 120, 120));
 	auto area(getLocalBounds().removeFromRight(200).withTrimmedTop(60));
@@ -168,16 +172,6 @@ void SampleDraggerPluginAudioProcessorEditor::generateFinalBuffer() {
 	specialBufferThumbnail->addBlock(0, *xtrabuffer, 0, workbuffer->getNumSamples());
 
 	processor.swapBuffer(workbuffer.release());
-}
-
-void SampleDraggerPluginAudioProcessorEditor::openButtonClicked()
-{
-#if 0
-	ScopedPointer<MySample> mySample = loader.loadAudioFile();
-	if (mySample == nullptr) return;
-	addAndMakeVisible(samples.add(new Sample(mySample.release())));
-	samples.getLast()->setPixelScale(pixelsToSeconds.getValue());
-#endif
 }
 
 void SampleDraggerPluginAudioProcessorEditor::saveButtonClicked()

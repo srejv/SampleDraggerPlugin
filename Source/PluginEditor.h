@@ -7,6 +7,7 @@
 
 #include "Helpers/AudioFileLoader.h"
 
+#include "Components/MyLookAndFeel.h"
 #include "Components/ScaleComponent.h"
 #include "Components/SampleComponent.h"
 
@@ -55,6 +56,8 @@ private:
 	ScaleComponent scaleComponent;
 
 	ScopedPointer<AudioSampleBuffer> xtrabuffer;
+
+	MyLookAndFeel lookAndFeel;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SampleDraggerPluginAudioProcessorEditor)
 };
