@@ -19,27 +19,6 @@ struct Command
     virtual void undo() = 0;
 };
 
-struct MoveCommand : public Command
-{
-    MoveCommand(Component* c, const Point<float>& from, const Point<float>& to) : c(c), from(from), to(to) { }
-
-    void execute() override {
-		if (!c.wasObjectDeleted()) {
-			c->setTopLeftPosition(to.roundToInt());
-		}
-        
-    }
-    void undo() override {
-		if (!c.wasObjectDeleted()) {
-			c->setTopLeftPosition(from.roundToInt());
-		}
-    }
-    
-private:
-	WeakReference<Component> c;
-    Point<float> from;
-    Point<float> to;
-};
 
 #if 0
 struct AddCommand : public Command

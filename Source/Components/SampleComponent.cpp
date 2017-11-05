@@ -11,7 +11,14 @@
 #include "SampleComponent.h"
 
 
-SampleComponent::SampleComponent() {}
+SampleComponent::SampleComponent() {
+	addAndMakeVisible(remove = new TextButton("X"));
+	remove->addListener(this);
+}
+
+void SampleComponent::resized() {
+	remove->setBounds(getLocalBounds().removeFromTop(20).removeFromLeft(20));
+}
 
 void SampleComponent::setThumbnail(AudioThumbnail* newThumbnail) {
   thumbnail = newThumbnail;
@@ -85,5 +92,12 @@ void SampleComponent::mouseDrag(const MouseEvent& e)
 
 void SampleComponent::mouseUp(const MouseEvent& e)
 {
-	listeners.call(&Listener::sampleMoved, this, moveFrom, getPosition().toFloat());
+	ScopedPointer<Command> cmd = new MoveCommand(this, moveFrom, getPosition().toFloat());
+	listeners.call(&Listener::sampleMoved, this, cmd.release());
 }
+
+void SampleComponent::buttonClicked(Button* btn)
+{
+	listeners.call(&Listener::sampleRemoved, this);
+}
+

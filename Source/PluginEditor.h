@@ -32,9 +32,7 @@ public:
 	// Is this really needed?
 	void timerCallback() override { repaint(); }
 
-	KeyPress undoKey{ 'z', ModifierKeys::ctrlModifier, juce_wchar('z') };
-	KeyPress redoKey{ 'y', ModifierKeys::ctrlModifier, juce_wchar('y') };
-
+	
 	bool keyPressed(const KeyPress& key, Component* originatingComponent) override {
 		ignoreUnused(originatingComponent);
 		if (key == undoKey) {
@@ -61,18 +59,18 @@ public:
 			c->execute();
 	}
 
-	void sampleMoved(SampleComponent* caller, const Point<float>& from, const Point<float>& to) override
-	{
-		pushCmd(new MoveCommand(caller, from, to));
+	void sampleMoved(SampleComponent* caller, Command* cmd) override {
+		pushCmd(cmd);
 	}
 
 	void pushCmd(Command* cmd) {
 		cmds.set(++cmdIndex, cmd);
 	}
-	
 
-	OwnedArray<Command>& getCommandList() {
-		return cmds;
+	void sampleRemoved(SampleComponent* sample) override {
+		removeChildComponent(sample);
+		auto indexOf = sampleComponents.indexOf(sample);
+		sampleComponents.remove(indexOf, true);
 	}
 
 private:
@@ -96,14 +94,14 @@ private:
 	//OwnedArray<Sample> samples;
 	OwnedArray<SampleComponent> sampleComponents;
 
-	ComboBox comboSampleList;
+	ScopedPointer<ComboBox> comboSampleList;
 	ScopedPointer<TextButton> btnAddSprite;
 
 	ScopedPointer<AudioThumbnail> specialBufferThumbnail;
 	AudioFileLoader loader;
 
-	Slider pixelsToSeconds;
-	ScaleComponent scaleComponent;
+	ScopedPointer<Slider> pixelsToSeconds;
+	ScopedPointer<ScaleComponent> scaleComponent;
 
 	ScopedPointer<AudioSampleBuffer> xtrabuffer;
 
@@ -111,6 +109,10 @@ private:
 
 	int cmdIndex = -1;
 	OwnedArray<Command> cmds;
+
+	KeyPress undoKey{ 'z', ModifierKeys::ctrlModifier, juce_wchar('z') };
+	KeyPress redoKey{ 'y', ModifierKeys::ctrlModifier, juce_wchar('y') };
+
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SampleDraggerPluginAudioProcessorEditor)
 };
