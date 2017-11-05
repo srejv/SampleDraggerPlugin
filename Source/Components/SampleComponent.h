@@ -47,53 +47,31 @@ public:
 	int getSampleLength() const;
 	int getNumChannels();
 
-	struct MoveCommand : public Command
-	{
-		MoveCommand(SampleComponent* c, const Point<float>& from, const Point<float>& to) : c(c), from(from), to(to) { }
-
-		void execute() override {
-			if (!c.wasObjectDeleted()) {
-				c->setTopLeftPosition(to.roundToInt());
-			}
-
-		}
-		void undo() override {
-			if (!c.wasObjectDeleted()) {
-				c->setTopLeftPosition(from.roundToInt());
-			}
-		}
-
-	private:
-		WeakReference<SampleComponent> c;
-		Point<float> from;
-		Point<float> to;
-	};
-
-	double getPixelScale() const {
-		return pixelToSeconds;
-	}
+	double getPixelScale() const;
 
 	struct MovePositionCommand : public Command
 	{
-		MovePositionCommand(SampleComponent* c, float from, float to) : c(c), from(from), to(to) { }
+		MovePositionCommand(SampleComponent* c, Point<double> from, Point<double> to) : c(c), from(from), to(to) { }
 
 		void execute() override {
 			if (!c.wasObjectDeleted()) {
-				c->setTopRightPosition(roundToInt(to * c->getPixelScale()), c->getY());
+				c->setPosition(to);
 			}
 
 		}
 		void undo() override {
 			if (!c.wasObjectDeleted()) {
-				c->setTopRightPosition(roundToInt(from * c->getPixelScale()), c->getY());
+				c->setPosition(from);
 			}
 		}
 
 	private:
 		WeakReference<SampleComponent> c;
-		float from;
-		float to;
+		Point<double> from;
+		Point<double> to;
 	};
+
+	void setPosition(const Point<double>& newPosition);
 
 private:
 
@@ -105,6 +83,7 @@ private:
 	void mouseUp(const MouseEvent& e) override;
 
 	Point<float> moveFrom;
+	double positionMoveFrom;
 
 	ScopedPointer<AudioThumbnail> thumbnail;
 	int samplePoolIndex;

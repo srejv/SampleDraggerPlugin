@@ -31,8 +31,8 @@ public:
     const double duration = reader->lengthInSamples / reader->sampleRate;
     SampleData data;
     data.name = file.getFileNameWithoutExtension();
-    data.buffer.setSize(reader->numChannels, reader->lengthInSamples);
-    reader->read(&data.buffer, 0, reader->lengthInSamples, 0, true, true);
+    data.buffer.setSize(reader->numChannels, static_cast<int>(reader->lengthInSamples));
+    reader->read(&data.buffer, 0, static_cast<int>(reader->lengthInSamples), 0, true, true);
 
     samplePool.push_back(data);
     return samplePool.size() - 1;

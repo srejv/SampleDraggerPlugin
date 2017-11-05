@@ -35,6 +35,12 @@ void SampleComponent::setNumSamples(int numSamples) {
   nsamples = numSamples;
 }
 
+void SampleComponent::setPosition(const Point<double>& p) {
+	position = p.getX();
+	setTopLeftPosition(getX(), roundToInt(p.getY()));
+	setPixelScale(getPixelScale());
+}
+
 void SampleComponent::setPixelScale(double pts) {
   pixelToSeconds = pts;
 
@@ -81,6 +87,7 @@ int SampleComponent::getNumChannels() {
 void SampleComponent::mouseDown(const MouseEvent& e)
 {
 	moveFrom = getPosition().toFloat();
+	positionMoveFrom = position;
 	myDragger.startDraggingComponent(this, e);
 }
 
@@ -92,12 +99,19 @@ void SampleComponent::mouseDrag(const MouseEvent& e)
 
 void SampleComponent::mouseUp(const MouseEvent& e)
 {
-	ScopedPointer<Command> cmd = new MoveCommand(this, moveFrom, getPosition().toFloat());
+	ScopedPointer<Command> cmd = new MovePositionCommand(this, 
+		{ positionMoveFrom, moveFrom.getY() }, 
+		{ position, static_cast<double>(getY()) });
 	listeners.call(&Listener::sampleMoved, this, cmd.release());
 }
 
 void SampleComponent::buttonClicked(Button* btn)
 {
-	listeners.call(&Listener::sampleRemoved, this);
+	if (btn == remove) {
+		listeners.call(&Listener::sampleRemoved, this);
+	}
 }
 
+double SampleComponent::getPixelScale() const {
+	return pixelToSeconds;
+}

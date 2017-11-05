@@ -221,11 +221,13 @@ void SampleDraggerPluginAudioProcessorEditor::saveButtonClicked()
 
 void SampleDraggerPluginAudioProcessorEditor::openButtonClickedSoundPool() {
 	int sampleIndex = loader.loadAudioFileIntoPool(processor.getSamplePool());
+	if (sampleIndex < 0) return;
 	comboSampleList->addItem(processor.getSamplePool().getSample(sampleIndex).name, sampleIndex + 1);
 }
 
 void SampleDraggerPluginAudioProcessorEditor::addSpriteButtonClicked() {
 	auto index = comboSampleList->getSelectedId() - 1;
+	if (index < 0) return;
 	addFromIndex(index);
 }
 
@@ -246,4 +248,46 @@ void SampleDraggerPluginAudioProcessorEditor::addFromIndex(int sampleIndex) {
 	newsample->addListener(this);
 
 	addAndMakeVisible(sampleComponents.add(newsample.release()));
+}
+
+
+bool SampleDraggerPluginAudioProcessorEditor::keyPressed(const KeyPress& key, Component* originatingComponent)  {
+	ignoreUnused(originatingComponent);
+	if (key == undoKey) {
+		undo();
+		return true;
+	}
+	if (key == redoKey) {
+		redo();
+		return true;
+	}
+	return false;
+}
+
+void SampleDraggerPluginAudioProcessorEditor::undo() {
+	if (cmdIndex < 0) return;
+	Command* c = cmds[cmdIndex--];
+	if (c != nullptr)
+		c->undo();
+}
+void SampleDraggerPluginAudioProcessorEditor::redo() {
+	if (cmdIndex >= cmds.size()) return;
+	Command* c = cmds[cmdIndex++];
+	if (c != nullptr)
+		c->execute();
+}
+
+void SampleDraggerPluginAudioProcessorEditor::sampleMoved(SampleComponent* caller, Command* cmd) {
+	ignoreUnused(caller);
+	pushCmd(cmd);
+}
+
+void SampleDraggerPluginAudioProcessorEditor::sampleRemoved(SampleComponent* sample) {
+	removeChildComponent(sample);
+	auto indexOf = sampleComponents.indexOf(sample);
+	sampleComponents.remove(indexOf, true);
+}
+
+void SampleDraggerPluginAudioProcessorEditor::pushCmd(Command* cmd) {
+	cmds.set(++cmdIndex, cmd);
 }

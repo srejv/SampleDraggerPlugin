@@ -26,7 +26,7 @@ MySample* AudioFileLoader::loadAudioFile() {
       {
         mySample = new MySample();
         mySample->fileName = file.getFileNameWithoutExtension();
-        mySample->fileBuffer.setSize(reader->numChannels, reader->lengthInSamples);
+        mySample->fileBuffer.setSize(reader->numChannels, static_cast<int>(reader->lengthInSamples));
         reader->read(&mySample->fileBuffer,
           0,
           reader->lengthInSamples,

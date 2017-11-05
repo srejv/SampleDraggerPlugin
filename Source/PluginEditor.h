@@ -31,47 +31,16 @@ public:
 
 	// Is this really needed?
 	void timerCallback() override { repaint(); }
-
 	
-	bool keyPressed(const KeyPress& key, Component* originatingComponent) override {
-		ignoreUnused(originatingComponent);
-		if (key == undoKey) {
-			undo();
-			return true;
-		} 
-		if(key == redoKey) {
-			redo();
-			return true;
-		}
-		return false;
-	}
+	bool keyPressed(const KeyPress& key, Component* originatingComponent) override;
 	
-	void undo() {
-		if (cmdIndex < 0) return;
-		Command* c = cmds[cmdIndex--];
-		if (c != nullptr)
-			c->undo();
-	}
-	void redo() {
-		if (cmdIndex >= cmds.size()) return;
-		Command* c = cmds[cmdIndex++];
-		if(c != nullptr)
-			c->execute();
-	}
+	void undo();
+	void redo();
+	
+	void sampleMoved(SampleComponent* caller, Command* cmd) override;
+	void sampleRemoved(SampleComponent* sample) override;
 
-	void sampleMoved(SampleComponent* caller, Command* cmd) override {
-		pushCmd(cmd);
-	}
-
-	void pushCmd(Command* cmd) {
-		cmds.set(++cmdIndex, cmd);
-	}
-
-	void sampleRemoved(SampleComponent* sample) override {
-		removeChildComponent(sample);
-		auto indexOf = sampleComponents.indexOf(sample);
-		sampleComponents.remove(indexOf, true);
-	}
+	void pushCmd(Command* cmd);
 
 private:
 	void drawWaveform(Graphics& g, const Rectangle<int>& thumbnailBounds);
@@ -90,22 +59,26 @@ private:
 	// This reference is provided as a quick way for your editor to
 	// access the processor object that created it.
 	SampleDraggerPluginAudioProcessor& processor;
-	ScopedPointer<TextButton> addSample, generateWaveform, saveGenerated, playButton;
-	//OwnedArray<Sample> samples;
+
+	// UI
 	OwnedArray<SampleComponent> sampleComponents;
+	ScopedPointer<TextButton> addSample, generateWaveform, saveGenerated, playButton;
 
 	ScopedPointer<ComboBox> comboSampleList;
 	ScopedPointer<TextButton> btnAddSprite;
 
 	ScopedPointer<AudioThumbnail> specialBufferThumbnail;
-	AudioFileLoader loader;
 
 	ScopedPointer<Slider> pixelsToSeconds;
 	ScopedPointer<ScaleComponent> scaleComponent;
 
-	ScopedPointer<AudioSampleBuffer> xtrabuffer;
-
 	MyLookAndFeel lookAndFeel;
+
+	// File loading
+	AudioFileLoader loader;
+
+	// Extra buffer
+	ScopedPointer<AudioSampleBuffer> xtrabuffer;
 
 	int cmdIndex = -1;
 	OwnedArray<Command> cmds;
