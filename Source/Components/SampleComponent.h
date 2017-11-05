@@ -11,11 +11,25 @@
 #pragma once
 
 #include "JuceHeader.h"
+#include "../Commands/Command.h"
 
 class SampleComponent : public Component
 {
 public:
 	SampleComponent();
+	~SampleComponent() {
+		// This will zero all the references - you need to call this in your destructor.
+		masterReference.clear();
+	}
+
+	class Listener {
+	public:
+		virtual ~Listener() {}
+		virtual void sampleMoved(SampleComponent*, const Point<float>& from, const Point<float>& to) = 0;
+	};
+
+	void addListener(Listener* listener) { listeners.add(listener);  }
+	void removeListner(Listener* listener) { listeners.remove(listener); }
 
 	void paint(Graphics& g) override;
 
@@ -36,6 +50,9 @@ private:
 
 	void mouseDown(const MouseEvent& e) override;
 	void mouseDrag(const MouseEvent& e) override;
+	void mouseUp(const MouseEvent& e) override;
+
+	Point<float> moveFrom;
 
 	ScopedPointer<AudioThumbnail> thumbnail;
 	int samplePoolIndex;
@@ -44,4 +61,8 @@ private:
 	int nsamples = 0;
 
 	double pixelToSeconds = 100.0f;
+
+	ListenerList<Listener> listeners;
+
+	JUCE_DECLARE_WEAK_REFERENCEABLE(SampleComponent)
 };

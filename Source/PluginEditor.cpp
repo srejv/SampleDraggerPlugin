@@ -49,17 +49,22 @@ SampleDraggerPluginAudioProcessorEditor::SampleDraggerPluginAudioProcessorEditor
 
 	startTimer(1);
 
+	addKeyListener(this);
+
 	setSize(800, 600);
 }
 
 SampleDraggerPluginAudioProcessorEditor::~SampleDraggerPluginAudioProcessorEditor()
 {
+	cmds.clear();
+
 	stopTimer();
 	setLookAndFeel(nullptr);
 	specialBufferThumbnail = nullptr;
 
 	removeAllChildren();
 	sampleComponents.clear(true);
+
 }
 
 //==============================================================================
@@ -229,6 +234,7 @@ void SampleDraggerPluginAudioProcessorEditor::addFromIndex(int sampleIndex) {
 	newsample->setIndex(sampleIndex);
 	newsample->setNumSamples(s.buffer.getNumSamples());
 	newsample->setPixelScale(pixelsToSeconds.getValue());
+	newsample->addListener(this);
 
 	addAndMakeVisible(sampleComponents.add(newsample.release()));
 }

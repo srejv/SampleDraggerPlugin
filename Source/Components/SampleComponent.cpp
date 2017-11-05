@@ -73,11 +73,17 @@ int SampleComponent::getNumChannels() {
 
 void SampleComponent::mouseDown(const MouseEvent& e)
 {
-  myDragger.startDraggingComponent(this, e);
+	moveFrom = getPosition().toFloat();
+	myDragger.startDraggingComponent(this, e);
 }
 
 void SampleComponent::mouseDrag(const MouseEvent& e)
 {
-  myDragger.dragComponent(this, e, nullptr);
-  position = getX() / pixelToSeconds;
+	myDragger.dragComponent(this, e, nullptr);
+	position = getX() / pixelToSeconds;
+}
+
+void SampleComponent::mouseUp(const MouseEvent& e)
+{
+	listeners.call(&Listener::sampleMoved, this, moveFrom, getPosition().toFloat());
 }
