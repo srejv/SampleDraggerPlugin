@@ -83,8 +83,8 @@ private:
 	int cmdIndex = -1;
 	OwnedArray<Command> cmds;
 
-	KeyPress undoKey{ 'z', ModifierKeys::ctrlModifier, juce_wchar('z') };
-	KeyPress redoKey{ 'y', ModifierKeys::ctrlModifier, juce_wchar('y') };
+	KeyPress undoKey{ 'z', ModifierKeys::commandModifier, juce_wchar('z') };
+	KeyPress redoKey{ 'y', ModifierKeys::commandModifier, juce_wchar('y') };
 
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SampleDraggerPluginAudioProcessorEditor)
