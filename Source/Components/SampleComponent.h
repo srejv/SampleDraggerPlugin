@@ -72,9 +72,9 @@ public:
 	};
 
 	void setPosition(const Point<double>& newPosition);
-
+    
 private:
-
+    double viewPosition = 0.0f;
 	double sampleRate = 48000.0;
 	ComponentDragger myDragger;
 

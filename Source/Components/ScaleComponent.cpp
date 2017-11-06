@@ -21,28 +21,36 @@ void ScaleComponent::paint(Graphics& g) {
   double w = static_cast<double>(area.getWidth());
 
   float h = static_cast<float>(getHeight());
+    
+  auto offset = roundToInt(viewPosition * pixelToSeconds);
 
   g.setColour(Colours::red);
   // Seconds!
-  double c = 0.0;
-  while (c < w) {
-    g.drawVerticalLine(roundToInt(c), 0, h);
+  double c = 0.0f;
+  while ((c - offset) < w) {
+    g.drawVerticalLine(roundToInt(c) - offset, 0, h);
     c += pixelToSeconds;
   }
 
   // Half a second!
   g.setColour(Colours::green);
   c = 0.0;
-  while (c < w) {
-    g.drawVerticalLine(roundToInt(c), 0, h - 8);
+  while ((c - offset) < w) {
+    g.drawVerticalLine(roundToInt(c) - offset, 0, h - 8);
     c += pixelToSeconds * 0.5f;
   }
 
   // Quarter of a second!
   g.setColour(Colours::blue);
   c = 0.0;
-  while (c < w) {
-    g.drawVerticalLine(roundToInt(c), 0, h - 16);
+  while ((c - offset) < w) {
+    g.drawVerticalLine(roundToInt(c) - offset, 0, h - 16);
     c += pixelToSeconds * 0.25f;
   }
 }
+
+void ScaleComponent::setViewPosition(double nviewPosition) {
+    viewPosition = nviewPosition;
+    repaint();
+}
+

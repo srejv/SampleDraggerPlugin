@@ -69,7 +69,7 @@ private:
 
 	ScopedPointer<AudioThumbnail> specialBufferThumbnail;
 
-	ScopedPointer<Slider> pixelsToSeconds;
+	ScopedPointer<Slider> pixelsToSeconds, viewPosition;
 	ScopedPointer<ScaleComponent> scaleComponent;
 
 	MyLookAndFeel lookAndFeel;

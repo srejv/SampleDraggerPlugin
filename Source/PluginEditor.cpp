@@ -30,8 +30,18 @@ SampleDraggerPluginAudioProcessorEditor::SampleDraggerPluginAudioProcessorEditor
 	pixelsToSeconds->setTextValueSuffix("px/s");
 	pixelsToSeconds->setValue(100.0f);
 	pixelsToSeconds->addListener(this);
+    
+    addAndMakeVisible(viewPosition = new Slider());
+    {
+        viewPosition->setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxRight, false, 80, 20);
+        viewPosition->setRange(0.0f, 120.0f);
+        viewPosition->setTextValueSuffix("s");
+        viewPosition->setValue(0.0f);
+        viewPosition->addListener(this);
+    }
 
 	addAndMakeVisible(scaleComponent = new ScaleComponent());
+    
 
 	addAndMakeVisible(generateWaveform = new TextButton("Generate"));
 	generateWaveform->addListener(this);
@@ -81,6 +91,8 @@ void SampleDraggerPluginAudioProcessorEditor::paint (Graphics& g)
 {
 	// (Our component is opaque, so we must completely fill the background with a solid colour)
 	g.fillAll(findColour(ResizableWindow::backgroundColourId));
+    
+    g.addTransform(AffineTransform::translation(-viewPosition->getValue(), 0.0f));
 
 	g.setColour(Colour(120, 120, 120));
 	auto area(getLocalBounds().removeFromRight(200).withTrimmedTop(60));
@@ -107,6 +119,7 @@ void SampleDraggerPluginAudioProcessorEditor::resized()
 
 	pixelsToSeconds->setBounds(area.removeFromBottom(20));
 	scaleComponent->setBounds(area.removeFromTop(20));
+    viewPosition->setBounds(area.removeFromBottom(20));
 }
 
 void SampleDraggerPluginAudioProcessorEditor::drawWaveform(Graphics& g, const Rectangle<int>& thumbnailBounds)
@@ -125,10 +138,19 @@ void SampleDraggerPluginAudioProcessorEditor::drawWaveform(Graphics& g, const Re
 }
 void SampleDraggerPluginAudioProcessorEditor::sliderValueChanged(Slider* slider)
 {
-	for (auto s : sampleComponents) {
-		s->setPixelScale(slider->getValue());
-	}
-	scaleComponent->setPixelToSeconds(slider->getValue());
+    if(slider == pixelsToSeconds) {
+        for (auto s : sampleComponents) {
+            s->setPixelScale(slider->getValue());
+        }
+        scaleComponent->setPixelToSeconds(slider->getValue());
+    }
+    if(slider == viewPosition) {
+        scaleComponent->setViewPosition(slider->getValue());
+        for(auto s : sampleComponents) {
+            s->setTransform(AffineTransform::translation(-slider->getValue() * pixelsToSeconds->getValue(), 0.0f));
+        }
+        repaint();
+    }
 };
 
 void SampleDraggerPluginAudioProcessorEditor::buttonClicked(Button* btn)
