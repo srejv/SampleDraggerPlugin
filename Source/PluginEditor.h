@@ -85,6 +85,7 @@ private:
 
 	KeyPress undoKey{ 'z', ModifierKeys::commandModifier, juce_wchar('z') };
 	KeyPress redoKey{ 'y', ModifierKeys::commandModifier, juce_wchar('y') };
+    KeyPress genKey{ 'g', ModifierKeys::commandModifier, juce_wchar('g') };
 
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SampleDraggerPluginAudioProcessorEditor)

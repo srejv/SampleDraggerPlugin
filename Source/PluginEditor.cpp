@@ -57,7 +57,7 @@ SampleDraggerPluginAudioProcessorEditor::SampleDraggerPluginAudioProcessorEditor
 	addAndMakeVisible(btnAddSprite = new TextButton("Add Sample"));
 	btnAddSprite->addListener(this);
 
-	startTimerHz(1);
+	startTimerHz(20);
 
 	addKeyListener(this);
 
@@ -98,7 +98,7 @@ void SampleDraggerPluginAudioProcessorEditor::paint (Graphics& g)
 	auto area(getLocalBounds().removeFromRight(200).withTrimmedTop(60));
 	if (specialBufferThumbnail != nullptr) {
 		double width = (processor.getNumSamples() / processor.getSampleRate()) * pixelsToSeconds->getValue();
-		drawWaveform(g, getLocalBounds().removeFromBottom(100).withTrimmedBottom(20).withWidth(roundToInt(width)));
+		drawWaveform(g, getLocalBounds().removeFromBottom(120).withTrimmedBottom(40).withWidth(roundToInt(width)));
 	}
 }
 
@@ -133,8 +133,16 @@ void SampleDraggerPluginAudioProcessorEditor::drawWaveform(Graphics& g, const Re
 	double startTime = 0.0f;
 	double endTime = processor.getNumSamples() / processor.getSampleRate();
 	float verticalZoom = 1.0f;
+    
+    g.saveState();
+    g.addTransform(AffineTransform::translation(-viewPosition->getValue() * pixelsToSeconds->getValue(), 0.0f));
 	g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::defaultFill));
 	specialBufferThumbnail->drawChannels(g, thumbnailBounds, startTime, endTime, verticalZoom);
+    
+    auto pposition = processor.getPosition() / processor.getSampleRate();
+    g.drawVerticalLine(roundToInt(pposition * pixelsToSeconds->getValue()), thumbnailBounds.getY(), thumbnailBounds.getBottom());
+    
+    g.restoreState();
 }
 void SampleDraggerPluginAudioProcessorEditor::sliderValueChanged(Slider* slider)
 {
@@ -287,6 +295,10 @@ bool SampleDraggerPluginAudioProcessorEditor::keyPressed(const KeyPress& key, Co
 		redo();
 		return true;
 	}
+    if (key == genKey) {
+        generateFinalBuffer();
+        return true;
+    }
 	return false;
 }
 

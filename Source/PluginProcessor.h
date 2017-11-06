@@ -76,6 +76,10 @@ public:
 	AudioSampleBuffer& getBuffer() {
 		return *mySpecialBuffer;
 	}
+    
+    int getPosition() const {
+        return position;
+    }
 
 public:
 
