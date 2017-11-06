@@ -34,20 +34,23 @@ void SampleComponent::resized() {
         
             startTime += (diff * pixelToSeconds) / fullWidth;
             if(startTime > endTime) {
-                startTime = endTime - 0.01;
-            }
-            position = xpos;
+				startTime -= (diff * pixelToSeconds) / fullWidth;
+			}
+            
+			position = xpos;
             
             if(startTime < 0.0) {
+				endTime -= startTime;
                 startTime = 0.0;
             }
         }
     
         if(resizeableEnd.getCurrentZone().getZoneFlags() == 4)
         {
-            endTime = ((static_cast<double>(getWidth()) - (startTime * fullWidth)) / fullWidth);
+            endTime = (static_cast<double>(getWidth()) / fullWidth) + startTime;
             
             if(endTime > 1.0) {
+				startTime -= endTime - 1.0;
                 endTime = 1.0;
             }
         }

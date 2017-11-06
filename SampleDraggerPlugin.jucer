@@ -3,7 +3,7 @@
 <JUCERPROJECT id="kYrFHr" name="SampleDraggerPlugin" displaySplashScreen="0"
               reportAppUsage="0" splashScreenColour="Dark" projectType="audioplug"
               version="1.0.0" bundleIdentifier="se.srejv.SampleDraggerPlugin"
-              includeBinaryInAppConfig="1" cppLanguageStandard="11" companyCopyright=""
+              includeBinaryInAppConfig="1" cppLanguageStandard="11" companyCopyright="Meh"
               buildVST="1" buildVST3="0" buildAU="1" buildAUv3="0" buildRTAS="0"
               buildAAX="0" buildStandalone="1" enableIAA="0" pluginName="SampleDraggerPlugin"
               pluginDesc="SampleDraggerPlugin" pluginManufacturer="srejv" pluginManufacturerCode="Manu"
@@ -11,7 +11,7 @@
               pluginWantsMidiIn="1" pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0"
               pluginEditorRequiresKeys="0" pluginAUExportPrefix="SampleDraggerPluginAU"
               pluginRTASCategory="" aaxIdentifier="se.srejv.SampleDraggerPlugin"
-              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="5.1.2"
+              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="5.2.0"
               companyName="Meh">
   <MAINGROUP id="JGg8o7" name="SampleDraggerPlugin">
     <GROUP id="{D4526B0B-85AC-6D79-D59B-4D2EBBA0535C}" name="Source">
@@ -100,8 +100,10 @@
     </LINUX_MAKE>
     <XCODE_MAC targetFolder="Builds/MacOSX">
       <CONFIGURATIONS>
-        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="SampleDraggerPlugin"/>
-        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="SampleDraggerPlugin"/>
+        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="SampleDraggerPlugin"
+                       enablePluginBinaryCopyStep="1"/>
+        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="SampleDraggerPlugin"
+                       enablePluginBinaryCopyStep="1"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_opengl" path="../juce/modules"/>
