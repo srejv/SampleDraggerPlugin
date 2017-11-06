@@ -47,7 +47,7 @@ SampleDraggerPluginAudioProcessorEditor::SampleDraggerPluginAudioProcessorEditor
 	addAndMakeVisible(btnAddSprite = new TextButton("Add Sample"));
 	btnAddSprite->addListener(this);
 
-	startTimer(1);
+	startTimerHz(1);
 
 	addKeyListener(this);
 
