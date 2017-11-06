@@ -51,13 +51,16 @@ SampleDraggerPluginAudioProcessorEditor::SampleDraggerPluginAudioProcessorEditor
 	playButton->addListener(this);
 
 	addAndMakeVisible(comboSampleList = new ComboBox());
-	comboSampleList->setTextWhenNothingSelected("No sample");
+	comboSampleList->setTextWhenNothingSelected("Select a to load");
 	comboSampleList->setTextWhenNoChoicesAvailable("Pool is empty");
 
 	addAndMakeVisible(btnAddSprite = new TextButton("Add Sample"));
 	btnAddSprite->addListener(this);
 
 	startTimerHz(20);
+
+	addAndMakeVisible(autoGen = new TextButton("AutoGen"));
+	autoGen->setClickingTogglesState(true);
 
 	addKeyListener(this);
 
@@ -108,15 +111,19 @@ void SampleDraggerPluginAudioProcessorEditor::resized()
 	
 	auto right = area.removeFromRight(100).withTrimmedBottom(20).withTrimmedBottom(20);
 	saveGenerated->setBounds(right.removeFromTop(20));
+	
 	right.removeFromTop(20);
-	addSample->setBounds(right.removeFromTop(100));
+	addSample->setBounds(right.removeFromTop(80));
 	right.removeFromTop(20);
+	
 	comboSampleList->setBounds(right.removeFromTop(20));
 	btnAddSprite->setBounds(right.removeFromTop(20));
 	right.removeFromTop(20);
-	generateWaveform->setBounds(right.removeFromTop(20));
-	playButton->setBounds(right.removeFromTop(20));
 
+	generateWaveform->setBounds(right.removeFromTop(20));
+	autoGen->setBounds(right.removeFromTop(20));
+	playButton->setBounds(right.removeFromTop(20));
+	
 	pixelsToSeconds->setBounds(area.removeFromBottom(20));
 	scaleComponent->setBounds(area.removeFromTop(20));
     viewPosition->setBounds(area.removeFromBottom(20));
