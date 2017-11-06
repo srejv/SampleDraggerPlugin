@@ -161,35 +161,39 @@ void SampleDraggerPluginAudioProcessorEditor::generateFinalBuffer() {
 	}
 	int length = max - min;
 
-	if (specialBufferThumbnail == nullptr) specialBufferThumbnail = loader.createThumbnail();
-	specialBufferThumbnail->reset(2, processor.getSampleRate());
+    if(length < 0) return;
+    
+    
+    ScopedPointer<AudioSampleBuffer> workbuffer = new AudioSampleBuffer(2, length);
+    xtrabuffer = new AudioSampleBuffer(2, length);
 
-	ScopedPointer<AudioSampleBuffer> workbuffer = new AudioSampleBuffer(2, length);
-	xtrabuffer = new AudioSampleBuffer(2, length);
+    
+    if (specialBufferThumbnail == nullptr) specialBufferThumbnail = loader.createThumbnail();
+    specialBufferThumbnail->reset(2, processor.getSampleRate());
 
-	workbuffer->clear();
-	xtrabuffer->clear();
+    workbuffer->clear();
+    xtrabuffer->clear();
 
-	for (auto s : sampleComponents) {
-		int index = s->getIndex();
-		auto& source(processor.getSamplePool().getSample(index));
-		if (source.name == String::empty) continue;
+    for (auto s : sampleComponents) {
+        int index = s->getIndex();
+        auto& source(processor.getSamplePool().getSample(index));
+        if (source.name == String::empty) continue;
 
-		auto startPos = static_cast<int>(s->getSampleStartPosition() - min);
+        auto startPos = static_cast<int>(s->getSampleStartPosition() - min);
 		
-		for (int i = 0; i < s->getNumChannels(); ++i) {
-			workbuffer->addFrom(i, startPos,
-				source.buffer, i, 0,
-				source.buffer.getNumSamples());
-			xtrabuffer->addFrom(i, startPos,
-				source.buffer, i, 0,
-				source.buffer.getNumSamples());
-		}
-	}
-
-	specialBufferThumbnail->addBlock(0, *xtrabuffer, 0, workbuffer->getNumSamples());
-
-	processor.swapBuffer(workbuffer.release());
+        for (int i = 0; i < s->getNumChannels(); ++i) {
+                workbuffer->addFrom(i, startPos,
+                                    source.buffer, i, 0,
+                                    source.buffer.getNumSamples());
+                xtrabuffer->addFrom(i, startPos,
+                                    source.buffer, i, 0,
+                                    source.buffer.getNumSamples());
+        }
+    }
+        
+    specialBufferThumbnail->addBlock(0, *xtrabuffer, 0, workbuffer->getNumSamples());
+    processor.swapBuffer(workbuffer.release());
+    
 }
 
 void SampleDraggerPluginAudioProcessorEditor::saveButtonClicked()
