@@ -59,6 +59,7 @@ public:
 	void setStateInformation (const void* data, int sizeInBytes) override;
 
 	void swapBuffer(AudioSampleBuffer* buffer) {
+        position = 0;
 		std::lock_guard<std::mutex> lock(g_i_mutex);
 		mySpecialBuffer = buffer;
 	}
