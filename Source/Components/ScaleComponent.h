@@ -10,5 +10,5 @@ public:
 	double getPixelToSeconds() const;
 private:
 	void paint(Graphics& g) override;
-	double pixelToSeconds;
+	double pixelToSeconds = 100.0f;
 };
