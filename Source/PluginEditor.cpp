@@ -92,13 +92,13 @@ void SampleDraggerPluginAudioProcessorEditor::paint (Graphics& g)
 	// (Our component is opaque, so we must completely fill the background with a solid colour)
 	g.fillAll(findColour(ResizableWindow::backgroundColourId));
     
-    g.addTransform(AffineTransform::translation(-viewPosition->getValue(), 0.0f));
+    //g.addTransform();
 
 	g.setColour(Colour(120, 120, 120));
-	auto area(getLocalBounds().removeFromRight(200).withTrimmedTop(60));
 	if (specialBufferThumbnail != nullptr) {
 		double width = (processor.getNumSamples() / processor.getSampleRate()) * pixelsToSeconds->getValue();
-		drawWaveform(g, getLocalBounds().removeFromBottom(120).withTrimmedBottom(40).withWidth(roundToInt(width)));
+        auto area(getLocalBounds().removeFromBottom(120).withTrimmedBottom(40).withWidth(roundToInt(width)).withX(-viewPosition->getValue() * pixelsToSeconds->getValue()));
+		drawWaveform(g, area);
 	}
 }
 
@@ -135,8 +135,8 @@ void SampleDraggerPluginAudioProcessorEditor::drawWaveform(Graphics& g, const Re
 	float verticalZoom = 1.0f;
     
     g.saveState();
-    g.addTransform(AffineTransform::translation(-viewPosition->getValue() * pixelsToSeconds->getValue(), 0.0f));
 	g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::defaultFill));
+    //g.addTransform(AffineTransform::translation(-viewPosition->getValue() * pixelsToSeconds->getValue(), 0.0f));
 	specialBufferThumbnail->drawChannels(g, thumbnailBounds, startTime, endTime, verticalZoom);
     
     auto pposition = processor.getPosition() / processor.getSampleRate();
@@ -213,11 +213,11 @@ void SampleDraggerPluginAudioProcessorEditor::generateFinalBuffer() {
 		
         for (int i = 0; i < s->getNumChannels(); ++i) {
                 workbuffer->addFrom(i, startPos,
-                                    source.buffer, i, 0,
-                                    source.buffer.getNumSamples());
+                                    source.buffer, i, s->getInternalSampleStart(),
+                                    s->getSampleLength());
                 xtrabuffer->addFrom(i, startPos,
-                                    source.buffer, i, 0,
-                                    source.buffer.getNumSamples());
+                                    source.buffer, i, s->getInternalSampleStart(),
+                                    s->getSampleLength());
         }
     }
         

@@ -46,6 +46,8 @@ public:
 	int getSampleStartPosition() const;
 	int getSampleLength() const;
 	int getNumChannels();
+    
+    int getInternalSampleStart();
 
 	double getPixelScale() const;
 
@@ -73,7 +75,29 @@ public:
 
 	void setPosition(const Point<double>& newPosition);
     
+    /*
+    void setStart(double newStart) {
+        startTime = newStart;
+    }
+    void setEnd(double newEnd) {
+        endTime = newEnd;
+    }
+     */
+    
+    double getStartTime() {
+        return startTime;
+    }
+    double getEndTime() {
+        return endTime;
+    }
+    
+    
 private:
+    ComponentBoundsConstrainer resizeContrain;
+    ResizableBorderComponent resizeableEnd;
+   
+
+    
     double viewPosition = 0.0f;
 	double sampleRate = 48000.0;
 	ComponentDragger myDragger;
@@ -92,6 +116,9 @@ private:
 	int nsamples = 0;
 
 	double pixelToSeconds = 100.0f;
+    
+    double startTime = 0.0f;
+    double endTime = 1.0f;
 
 	ListenerList<Listener> listeners;
 

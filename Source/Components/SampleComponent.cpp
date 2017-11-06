@@ -11,13 +11,47 @@
 #include "SampleComponent.h"
 
 
-SampleComponent::SampleComponent() {
+SampleComponent::SampleComponent() : resizeableEnd(this, &resizeContrain)
+{
 	addAndMakeVisible(remove = new TextButton("X"));
 	remove->addListener(this);
+    
+    addAndMakeVisible(resizeableEnd);
 }
 
 void SampleComponent::resized() {
 	remove->setBounds(getLocalBounds().removeFromTop(20).removeFromLeft(20));
+    resizeableEnd.setBounds(getLocalBounds());
+    
+    double fullWidth = (nsamples / sampleRate) * pixelToSeconds;
+    
+    if(resizeableEnd.isMouseOverOrDragging())
+    {
+        if(resizeableEnd.getCurrentZone().getZoneFlags() == 1)
+        {
+            auto xpos = getX() / pixelToSeconds;
+            auto diff = xpos - position;
+        
+            startTime += (diff * pixelToSeconds) / fullWidth;
+            if(startTime > endTime) {
+                startTime = endTime - 0.01;
+            }
+            position = xpos;
+            
+            if(startTime < 0.0) {
+                startTime = 0.0;
+            }
+        }
+    
+        if(resizeableEnd.getCurrentZone().getZoneFlags() == 4)
+        {
+            endTime = ((static_cast<double>(getWidth()) - (startTime * fullWidth)) / fullWidth);
+            
+            if(endTime > 1.0) {
+                endTime = 1.0;
+            }
+        }
+    }
 }
 
 void SampleComponent::setThumbnail(AudioThumbnail* newThumbnail) {
@@ -42,13 +76,20 @@ void SampleComponent::setPosition(const Point<double>& p) {
 }
 
 void SampleComponent::setPixelScale(double pts) {
-  pixelToSeconds = pts;
+    pixelToSeconds = pts;
 
-  double width = (nsamples / sampleRate) * pixelToSeconds;
-  setSize(roundToInt(width), 80);
-
-  setTopLeftPosition(roundToInt(position * pixelToSeconds), getY());
-  repaint();
+    auto mw = (nsamples / sampleRate) * pixelToSeconds;
+    resizeContrain.setMaximumWidth(mw);
+    resizeContrain.setMinimumWidth(1);
+    resizeContrain.setMinimumHeight(getHeight());
+    resizeContrain.setMaximumHeight(getHeight());
+    
+    double width = (nsamples / sampleRate) * pixelToSeconds * (endTime - startTime);
+    
+    setSize(jmax(1, roundToInt(width)), 80);
+    
+    setTopLeftPosition(roundToInt(position * pixelToSeconds), getY());
+    repaint();
 }
 
 void SampleComponent::paint(Graphics& g) {
@@ -56,28 +97,33 @@ void SampleComponent::paint(Graphics& g) {
 
   g.fillAll(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::widgetBackground));
 
-  g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::outline));
-  g.drawRect(getLocalBounds());
-
-  g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::defaultText));
-  g.drawText(getName(), getLocalBounds(), Justification::centred);
 
   if (thumbnail != nullptr) {
-    const double startTime = 0.0f;
-    const double endTime = thumbnail->getTotalLength();
     float verticalZoom = 1.0f;
     g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::defaultFill));
     thumbnail->drawChannels(g, getLocalBounds(),
-      startTime, endTime, verticalZoom);
+      startTime*nsamples/sampleRate, endTime*nsamples/sampleRate, verticalZoom);
   }
+
+    g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::defaultText));
+    g.drawText(getName(), getLocalBounds(), Justification::centred);
+
+    
+  g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::outline));
+  g.drawRect(getLocalBounds());
+
 }
 
 int SampleComponent::getSampleStartPosition() const {
-  return roundToInt(position * sampleRate);
+  return roundToInt(position * sampleRate) + roundToInt(startTime * nsamples);
+}
+
+int SampleComponent::getInternalSampleStart() {
+    return roundToInt(startTime * nsamples);
 }
 
 int SampleComponent::getSampleLength() const {
-  return nsamples;
+  return roundToInt(nsamples * (endTime-startTime));
 }
 
 int SampleComponent::getNumChannels() {
@@ -86,6 +132,15 @@ int SampleComponent::getNumChannels() {
 
 void SampleComponent::mouseDown(const MouseEvent& e)
 {
+    if(e.mods.isRightButtonDown()) {
+        PopupMenu menu;
+        menu.addItem(1, String(startTime));
+        menu.addItem(2, String(endTime));
+        
+        menu.show();
+        
+        return;
+    }
 	moveFrom = getPosition().toFloat();
 	positionMoveFrom = position;
 	myDragger.startDraggingComponent(this, e);
