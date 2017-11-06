@@ -30,7 +30,9 @@ public:
 	void resized() override;
 
 	// Is this really needed?
-	void timerCallback() override { repaint(); }
+	void timerCallback() override { 
+		if (autoGen->getToggleState()) { generateFinalBuffer(); }
+		repaint(); }
 	
 	bool keyPressed(const KeyPress& key, Component* originatingComponent) override;
 	
@@ -62,7 +64,7 @@ private:
 
 	// UI
 	OwnedArray<SampleComponent> sampleComponents;
-	ScopedPointer<TextButton> addSample, generateWaveform, saveGenerated, playButton;
+	ScopedPointer<TextButton> addSample, generateWaveform, saveGenerated, playButton, autoGen;
 
 	ScopedPointer<ComboBox> comboSampleList;
 	ScopedPointer<TextButton> btnAddSprite;
