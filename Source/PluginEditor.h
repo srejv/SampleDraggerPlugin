@@ -32,7 +32,8 @@ public:
 	// Is this really needed?
 	void timerCallback() override { 
 		if (autoGen->getToggleState()) { generateFinalBuffer(); }
-		repaint(); }
+		repaint(); 
+	}
 	
 	bool keyPressed(const KeyPress& key, Component* originatingComponent) override;
 	

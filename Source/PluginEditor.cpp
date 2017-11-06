@@ -143,7 +143,6 @@ void SampleDraggerPluginAudioProcessorEditor::drawWaveform(Graphics& g, const Re
     
     g.saveState();
 	g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::defaultFill));
-    //g.addTransform(AffineTransform::translation(-viewPosition->getValue() * pixelsToSeconds->getValue(), 0.0f));
 	specialBufferThumbnail->drawChannels(g, thumbnailBounds, startTime, endTime, verticalZoom);
     
     auto pposition = processor.getPosition() / processor.getSampleRate();
