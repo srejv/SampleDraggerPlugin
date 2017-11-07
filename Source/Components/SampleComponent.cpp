@@ -13,10 +13,40 @@
 
 SampleComponent::SampleComponent() : resizeableEnd(this, &resizeContrain)
 {
+	resizeContrain.addListener(this);
 	addAndMakeVisible(remove = new TextButton("X"));
 	remove->addListener(this);
     
     addAndMakeVisible(resizeableEnd);
+}
+
+void SampleComponent::resizeStarted() {
+	if (resizeableEnd.isMouseOverOrDragging())
+	{
+		if (resizeableEnd.getCurrentZone().getZoneFlags() == 1) {
+			oldStart = startTime;
+		}
+		if (resizeableEnd.getCurrentZone().getZoneFlags() == 4) {
+			oldEnd = endTime;
+		}
+	}
+}
+void SampleComponent::resizeEnded() {
+	if (resizeableEnd.isMouseOverOrDragging())
+	{
+		if (resizeableEnd.getCurrentZone().getZoneFlags() == 1) {
+			if (oldEnd == endTime) {
+				listeners.call(&SampleComponent::Listener::sampleEndPointChanged, this, new SetEndCommand(this, oldEnd, endTime));
+			}
+			listeners.call(&SampleComponent::Listener::sampleStartPointChanged, this, new  SetStartCommand(this, oldStart, startTime));
+		}
+		if (resizeableEnd.getCurrentZone().getZoneFlags() == 4) {
+			if (oldStart == startTime) {
+				listeners.call(&SampleComponent::Listener::sampleStartPointChanged, this, new  SetStartCommand(this, oldStart, startTime));
+			}
+			listeners.call(&SampleComponent::Listener::sampleEndPointChanged, this, new SetEndCommand(this, oldEnd, endTime));
+		}
+	}
 }
 
 void SampleComponent::resized() {
@@ -29,7 +59,7 @@ void SampleComponent::resized() {
     {
         if(resizeableEnd.getCurrentZone().getZoneFlags() == 1)
         {
-            auto xpos = getX() / pixelToSeconds;
+			auto xpos = getX() / pixelToSeconds;
             auto diff = xpos - position;
         
             startTime += (diff * pixelToSeconds) / fullWidth;
@@ -114,27 +144,25 @@ void SampleComponent::paint(Graphics& g) {
     
   g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::outline));
   g.drawRect(getLocalBounds());
-
 }
 
 int SampleComponent::getSampleStartPosition() const {
-  return roundToInt(position * sampleRate) + roundToInt(startTime * nsamples);
+	return roundToInt((getX() / pixelToSeconds) * sampleRate);
 }
 
 int SampleComponent::getInternalSampleStart() {
-    return roundToInt(startTime * nsamples);
+	return roundToInt(startTime * nsamples);
 }
 
 int SampleComponent::getSampleLength() const {
-  return roundToInt(nsamples * (endTime-startTime));
+	return roundToInt(nsamples * (endTime - startTime));
 }
 
 int SampleComponent::getNumChannels() {
-  return thumbnail->getNumChannels();
+	return thumbnail->getNumChannels();
 }
 
-void SampleComponent::mouseDown(const MouseEvent& e)
-{
+void SampleComponent::mouseDown(const MouseEvent& e) {
     if(e.mods.isRightButtonDown()) {
         PopupMenu menu;
         menu.addItem(1, String(startTime));
@@ -160,13 +188,13 @@ void SampleComponent::mouseUp(const MouseEvent& e)
 	ScopedPointer<Command> cmd = new MovePositionCommand(this, 
 		{ positionMoveFrom, moveFrom.getY() }, 
 		{ position, static_cast<double>(getY()) });
-	listeners.call(&Listener::sampleMoved, this, cmd.release());
+	listeners.call(&SampleComponent::Listener::sampleMoved, this, cmd.release());
 }
 
 void SampleComponent::buttonClicked(Button* btn)
 {
 	if (btn == remove) {
-		listeners.call(&Listener::sampleRemoved, this);
+		listeners.call(&SampleComponent::Listener::sampleRemoved, this);
 	}
 }
 

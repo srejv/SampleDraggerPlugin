@@ -13,7 +13,36 @@
 #include "JuceHeader.h"
 #include "../Commands/Command.h"
 
-class SampleComponent : public Component, public Button::Listener
+class SampleBoundsContrainer : public ComponentBoundsConstrainer
+{
+public:
+	class Listener {
+	public:
+		virtual ~Listener() {}
+		virtual void resizeStarted() = 0;
+		virtual void resizeEnded() = 0;
+	};
+
+	void resizeStart() override {
+		listeners.call(&Listener::resizeStarted);
+	}
+	void resizeEnd() override {
+		listeners.call(&Listener::resizeEnded);
+	}
+	
+	void addListener(Listener* listener) {
+		listeners.add(listener);
+	}
+	void removeListener(Listener* listener) {
+		listeners.remove(listener);
+	}
+
+	ListenerList<Listener> listeners;
+	enum class Direction : int {Left, Right};
+	Direction current = Direction::Left;
+};
+
+class SampleComponent : public Component, public Button::Listener, public SampleBoundsContrainer::Listener
 {
 public:
 	SampleComponent();
@@ -27,10 +56,15 @@ public:
 		virtual ~Listener() {}
 		virtual void sampleMoved(SampleComponent*, Command* cmd) = 0;
 		virtual void sampleRemoved(SampleComponent*) = 0;
+		virtual void sampleStartPointChanged(SampleComponent*, Command* cmd) = 0;
+		virtual void sampleEndPointChanged(SampleComponent*, Command* cmd) = 0;
 	};
 
 	void addListener(Listener* listener) { listeners.add(listener);  }
 	void removeListner(Listener* listener) { listeners.remove(listener); }
+
+	void resizeStarted() override;
+	void resizeEnded() override;
 
 	void resized() override;
 	void paint(Graphics& g) override;
@@ -72,17 +106,69 @@ public:
 		Point<double> from;
 		Point<double> to;
 	};
+	
+	struct SetStartCommand : public Command
+	{
+		SetStartCommand(SampleComponent* c, double from, double to) : c(c), from(from), to(to) { }
+
+		void execute() override {
+			if (!c.wasObjectDeleted()) {
+				c->setStart(to);
+			}
+
+		}
+		void undo() override {
+			if (!c.wasObjectDeleted()) {
+				c->setStart(from);
+			}
+		}
+		
+	private:
+		WeakReference<SampleComponent> c;
+		double from;
+		double to;
+	};
+
+	struct SetEndCommand : public Command
+	{
+		SetEndCommand(SampleComponent* c, double from, double to) : c(c), from(from), to(to) { }
+
+		void execute() override {
+			if (!c.wasObjectDeleted()) {
+				c->setEnd(to);
+			}
+
+		}
+		void undo() override {
+			if (!c.wasObjectDeleted()) {
+				c->setEnd(from);
+			}
+		}
+
+	private:
+		WeakReference<SampleComponent> c;
+		double from;
+		double to;
+	};
 
 	void setPosition(const Point<double>& newPosition);
     
-    /*
     void setStart(double newStart) {
-        startTime = newStart;
+		double fullWidth = (nsamples / sampleRate) * pixelToSeconds;
+		double newWidth = (nsamples / sampleRate) * pixelToSeconds * (endTime - newStart);
+		auto startDiff = newStart - startTime;
+		auto xdiff = (startDiff * fullWidth) / pixelToSeconds;
+		position += xdiff;
+		startTime = newStart;
+		
+		setTopLeftPosition(roundToInt(position * pixelToSeconds), getY());
+		setSize(newWidth, getHeight());
     }
     void setEnd(double newEnd) {
+		double newWidth = (nsamples / sampleRate) * pixelToSeconds * (newEnd - startTime);
         endTime = newEnd;
+		setSize(newWidth, getHeight());
     }
-     */
     
     double getStartTime() {
         return startTime;
@@ -93,7 +179,7 @@ public:
     
     
 private:
-    ComponentBoundsConstrainer resizeContrain;
+	SampleBoundsContrainer resizeContrain;
     ResizableBorderComponent resizeableEnd;
    
 
@@ -119,6 +205,9 @@ private:
     
     double startTime = 0.0f;
     double endTime = 1.0f;
+
+	double oldStart = 0.0;
+	double oldEnd = 0.0;
 
 	ListenerList<Listener> listeners;
 

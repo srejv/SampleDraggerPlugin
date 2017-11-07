@@ -42,6 +42,15 @@ public:
 	
 	void sampleMoved(SampleComponent* caller, Command* cmd) override;
 	void sampleRemoved(SampleComponent* sample) override;
+	void sampleStartPointChanged(SampleComponent* caller, Command* cmd) override {
+		// new  SetStartCommand(this, oldStart, startTime);
+		ignoreUnused(caller);
+		pushCmd(cmd);
+	}
+	void sampleEndPointChanged(SampleComponent* caller, Command* cmd) override {
+		ignoreUnused(caller);
+		pushCmd(cmd);
+	}
 
 	void pushCmd(Command* cmd);
 

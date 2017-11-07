@@ -211,19 +211,16 @@ void SampleDraggerPluginAudioProcessorEditor::generateFinalBuffer() {
     xtrabuffer->clear();
 
     for (auto s : sampleComponents) {
-        int index = s->getIndex();
-        auto& source(processor.getSamplePool().getSample(index));
-        if (source.name == String::empty) continue;
+		int index = s->getIndex();
+		auto& source(processor.getSamplePool().getSample(index));
+		if (source.name == String::empty) continue;
 
-        auto startPos = static_cast<int>(s->getSampleStartPosition() - min);
-		
-        for (int i = 0; i < s->getNumChannels(); ++i) {
-                workbuffer->addFrom(i, startPos,
-                                    source.buffer, i, s->getInternalSampleStart(),
-                                    s->getSampleLength());
-                xtrabuffer->addFrom(i, startPos,
-                                    source.buffer, i, s->getInternalSampleStart(),
-                                    s->getSampleLength());
+		auto startPos = static_cast<int>(s->getSampleStartPosition() - min);
+		for (int i = 0; i < s->getNumChannels(); ++i) {
+			auto internalStart = s->getInternalSampleStart();
+			auto internalLength = s->getSampleLength();
+			workbuffer->addFrom(i, startPos, source.buffer, i, internalStart, internalLength);
+			xtrabuffer->addFrom(i, startPos, source.buffer, i, internalStart, internalLength);
         }
     }
         
