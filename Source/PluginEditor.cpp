@@ -17,12 +17,14 @@ SampleDraggerPluginAudioProcessorEditor::SampleDraggerPluginAudioProcessorEditor
     : AudioProcessorEditor (&p), processor (p)
 {
 	setLookAndFeel(&lookAndFeel);
-
+    
 	addAndMakeVisible(addSample = new TextButton("Load file -> Sound Pool"));
-	addSample->addListener(this);
-
+    addSample->addListener(this);
+    addSample->addShortcut(loadSampleKey);
+    
 	addAndMakeVisible(saveGenerated = new TextButton("Save Generated Sample"));
 	saveGenerated->addListener(this);
+    saveGenerated->addShortcut(saveKey);
 
 	addAndMakeVisible(pixelsToSeconds = new Slider());
 	pixelsToSeconds->setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxRight, false, 80, 20);
@@ -44,10 +46,12 @@ SampleDraggerPluginAudioProcessorEditor::SampleDraggerPluginAudioProcessorEditor
     
 
 	addAndMakeVisible(generateWaveform = new TextButton("Generate"));
+    generateWaveform->addShortcut(genKey);
 	generateWaveform->addListener(this);
 
 	addAndMakeVisible(playButton = new TextButton("Play"));
 	playButton->setClickingTogglesState(true);
+    playButton->addShortcut(playKey);
 	playButton->addListener(this);
 
 	addAndMakeVisible(comboSampleList = new ComboBox());
@@ -56,11 +60,15 @@ SampleDraggerPluginAudioProcessorEditor::SampleDraggerPluginAudioProcessorEditor
 
 	addAndMakeVisible(btnAddSprite = new TextButton("Add Sample"));
 	btnAddSprite->addListener(this);
+    btnAddSprite->addShortcut(addSpriteKey);
 
 	startTimerHz(20);
 
+    
+    
 	addAndMakeVisible(autoGen = new TextButton("AutoGen"));
 	autoGen->setClickingTogglesState(true);
+    autoGen->addShortcut(autoGenKey);
 
 	addKeyListener(this);
 

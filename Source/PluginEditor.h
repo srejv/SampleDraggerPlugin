@@ -43,7 +43,6 @@ public:
 	void sampleMoved(SampleComponent* caller, Command* cmd) override;
 	void sampleRemoved(SampleComponent* sample) override;
 	void sampleStartPointChanged(SampleComponent* caller, Command* cmd) override {
-		// new  SetStartCommand(this, oldStart, startTime);
 		ignoreUnused(caller);
 		pushCmd(cmd);
 	}
@@ -97,8 +96,12 @@ private:
 
 	KeyPress undoKey{ 'z', ModifierKeys::commandModifier, juce_wchar('z') };
 	KeyPress redoKey{ 'y', ModifierKeys::commandModifier, juce_wchar('y') };
-    KeyPress genKey{ 'g', ModifierKeys::commandModifier, juce_wchar('g') };
-
-
+    KeyPress genKey{ 'r', ModifierKeys::commandModifier, juce_wchar('r') };
+    KeyPress loadSampleKey{'o', ModifierKeys::commandModifier, juce_wchar('o')};
+    KeyPress addSpriteKey{'a', ModifierKeys::commandModifier, juce_wchar('a')};
+    KeyPress saveKey{'s', ModifierKeys::commandModifier, juce_wchar('s')};
+    KeyPress playKey{KeyPress::spaceKey};
+    KeyPress autoGenKey{'g', ModifierKeys::commandModifier, juce_wchar('g')};
+    
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SampleDraggerPluginAudioProcessorEditor)
 };
