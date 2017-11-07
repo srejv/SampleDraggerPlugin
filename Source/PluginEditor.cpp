@@ -282,9 +282,12 @@ void SampleDraggerPluginAudioProcessorEditor::addFromIndex(int sampleIndex) {
 	newsample->setIndex(sampleIndex);
 	newsample->setNumSamples(s.buffer.getNumSamples());
 	newsample->setPixelScale(pixelsToSeconds->getValue());
-	newsample->addListener(this);
+    newsample->addListener(this);
 
 	addAndMakeVisible(sampleComponents.add(newsample.release()));
+    for(auto s : sampleComponents) {
+        s->setPixelScale(pixelsToSeconds->getValue());
+    }
 }
 
 
