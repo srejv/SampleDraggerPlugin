@@ -14,6 +14,9 @@
               pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="5.2.0"
               companyName="Meh">
   <MAINGROUP id="JGg8o7" name="SampleDraggerPlugin">
+    <GROUP id="{F1A3365B-8BA2-A0D9-5395-86B5F9B23F68}" name="Resources">
+      <FILE id="Ins0J3" name="logoiguess.svg" compile="0" resource="1" file="Resources/logoiguess.svg"/>
+    </GROUP>
     <GROUP id="{D4526B0B-85AC-6D79-D59B-4D2EBBA0535C}" name="Source">
       <GROUP id="{CB89D055-9EFE-B07C-F856-0981B4402692}" name="Commands">
         <FILE id="lMPGqx" name="Command.h" compile="0" resource="0" file="Source/Commands/Command.h"/>
@@ -50,7 +53,8 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <VS2017 targetFolder="Builds/VisualStudio2017" windowsTargetPlatformVersion="10.0.16299.0">
+    <VS2017 targetFolder="Builds/VisualStudio2017" windowsTargetPlatformVersion="10.0.16299.0"
+            smallIcon="Ins0J3" bigIcon="Ins0J3">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" winWarningLevel="4" generateManifest="1" winArchitecture="x64"
                        debugInformationFormat="ProgramDatabase" enablePluginBinaryCopyStep="0"
@@ -98,7 +102,7 @@
         <MODULEPATH id="juce_audio_basics" path="../JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
-    <XCODE_MAC targetFolder="Builds/MacOSX">
+    <XCODE_MAC targetFolder="Builds/MacOSX" smallIcon="Ins0J3" bigIcon="Ins0J3">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="SampleDraggerPlugin"
                        enablePluginBinaryCopyStep="1"/>
