@@ -30,7 +30,7 @@ MySample* AudioFileLoader::loadAudioFile() {
                    true,
                    true);
       mySample->position = 0;
-      my/Users/od/DocumentsSample->numChannels = reader->numChannels;
+      mySample->numChannels = reader->numChannels;
       mySample->thumbnail = createThumbnail();
       mySample->thumbnail->addBlock(0, mySample->fileBuffer, 0, mySample->fileBuffer.getNumSamples());
       return mySample.release();
