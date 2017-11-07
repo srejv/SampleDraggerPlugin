@@ -5,7 +5,7 @@ AudioFileLoader::AudioFileLoader() : cache(20) {
 }
 
 AudioThumbnail* AudioFileLoader::createThumbnail() {
-  return new AudioThumbnail(512, formatManager, cache);
+  return new AudioThumbnail(1024, formatManager, cache);
 }
 
 MySample* AudioFileLoader::loadAudioFile() {
