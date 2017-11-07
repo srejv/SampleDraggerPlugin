@@ -20,29 +20,24 @@ MySample* AudioFileLoader::loadAudioFile() {
 
     if (reader != nullptr)
     {
-      const double duration = reader->lengthInSamples / reader->sampleRate;
-
-      if (duration < 20)
-      {
-        mySample = new MySample();
-        mySample->fileName = file.getFileNameWithoutExtension();
-        mySample->fileBuffer.setSize(reader->numChannels, static_cast<int>(reader->lengthInSamples));
-        reader->read(&mySample->fileBuffer,
-          0,
-          reader->lengthInSamples,
-          0,
-          true,
-          true);
-        mySample->position = 0;
-        mySample->numChannels = reader->numChannels;
-        mySample->thumbnail = createThumbnail();
-        mySample->thumbnail->addBlock(0, mySample->fileBuffer, 0, mySample->fileBuffer.getNumSamples());
-        return mySample.release();
-      }
-      else
-      {
-        // handle the error that the file is 2 seconds or longer..
-      }
+      mySample = new MySample();
+      mySample->fileName = file.getFileNameWithoutExtension();
+      mySample->fileBuffer.setSize(reader->numChannels, static_cast<int>(reader->lengthInSamples));
+      reader->read(&mySample->fileBuffer,
+                   0,
+                   static_cast<int>(reader->lengthInSamples),
+                   0,
+                   true,
+                   true);
+      mySample->position = 0;
+      my/Users/od/DocumentsSample->numChannels = reader->numChannels;
+      mySample->thumbnail = createThumbnail();
+      mySample->thumbnail->addBlock(0, mySample->fileBuffer, 0, mySample->fileBuffer.getNumSamples());
+      return mySample.release();
+    }
+    else
+    {
+      // handle the error that the file is 2 seconds or longer..
     }
   }
   return nullptr;
