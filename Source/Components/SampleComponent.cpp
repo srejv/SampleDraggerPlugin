@@ -16,8 +16,12 @@ SampleComponent::SampleComponent() : resizeableEnd(this, &resizeContrain)
 	resizeContrain.addListener(this);
 	addAndMakeVisible(remove = new TextButton("X"));
 	remove->addListener(this);
+
+	resizeableEnd.setBorderThickness(BorderSize<int>(0, 5, 0, 5));
     
     addAndMakeVisible(resizeableEnd);
+
+	addAndMakeVisible(envelopeComponent = new EnvelopeComponent());
 }
 
 void SampleComponent::resizeStarted() {
@@ -85,6 +89,8 @@ void SampleComponent::resized() {
             }
         }
     }
+
+	envelopeComponent->setBounds(getLocalBounds());
 }
 
 void SampleComponent::setThumbnail(AudioThumbnail* newThumbnail) {
@@ -167,8 +173,12 @@ void SampleComponent::mouseDown(const MouseEvent& e) {
         PopupMenu menu;
         menu.addItem(1, String(startTime));
         menu.addItem(2, String(endTime));
+		menu.addItem(3, "Edit Envelope", true, envelopeComponent->isVisible());
         
-        menu.show();
+        auto result = menu.show();
+		if (result == 3) {
+			envelopeComponent->setVisible(!envelopeComponent->isVisible());
+		}
         
         return;
     }
