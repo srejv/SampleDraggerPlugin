@@ -11,7 +11,7 @@
               pluginWantsMidiIn="1" pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0"
               pluginEditorRequiresKeys="0" pluginAUExportPrefix="SampleDraggerPluginAU"
               pluginRTASCategory="" aaxIdentifier="se.srejv.SampleDraggerPlugin"
-              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="5.2.0"
+              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="5.1.2"
               companyName="Meh">
   <MAINGROUP id="JGg8o7" name="SampleDraggerPlugin">
     <GROUP id="{F1A3365B-8BA2-A0D9-5395-86B5F9B23F68}" name="Resources">

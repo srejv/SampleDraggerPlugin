@@ -207,10 +207,8 @@ void SampleDraggerPluginAudioProcessorEditor::generateFinalBuffer() {
 
     if(length < 0) return;
     
-    
     ScopedPointer<AudioSampleBuffer> workbuffer = new AudioSampleBuffer(2, length);
     xtrabuffer = new AudioSampleBuffer(2, length);
-
     
     if (specialBufferThumbnail == nullptr) specialBufferThumbnail = loader.createThumbnail();
     specialBufferThumbnail->reset(2, processor.getSampleRate());
@@ -218,18 +216,47 @@ void SampleDraggerPluginAudioProcessorEditor::generateFinalBuffer() {
     workbuffer->clear();
     xtrabuffer->clear();
 
+    ScopedPointer< std::vector<EnvelopeComponent::Ramp>> ramps;
+    
     for (auto s : sampleComponents) {
 		int index = s->getIndex();
 		auto& source(processor.getSamplePool().getSample(index));
 		if (source.name == String::empty) continue;
-
+        
 		auto startPos = static_cast<int>(s->getSampleStartPosition() - min);
+        
+        auto internalStart = s->getInternalSampleStart();
+        auto internalLength = s->getSampleLength();
+
+        ramps = s->getRamps();
+        
+        int rampAccumulator = 0;
+        
+        for(auto r : *ramps) {
+            std::cout << r.numSamples << " " << r.startGain << " " << r.endGain << std::endl;
+            
+            for (int i = 0; i < s->getNumChannels(); ++i) {
+                int destChannel = i;
+                int destStartSample = startPos + rampAccumulator;
+                const float* sauce = source.buffer.getReadPointer(i) + (rampAccumulator);
+                int numSamples = r.numSamples;
+                float startGain = r.startGain;
+                float endGain = r.endGain;
+                
+                workbuffer->addFromWithRamp(destChannel, destStartSample, sauce, numSamples, startGain, endGain);
+                xtrabuffer->addFromWithRamp(destChannel, destStartSample, sauce, numSamples, startGain, endGain);
+            }
+            rampAccumulator += r.numSamples;
+        }
+        
+#if 0
 		for (int i = 0; i < s->getNumChannels(); ++i) {
 			auto internalStart = s->getInternalSampleStart();
 			auto internalLength = s->getSampleLength();
 			workbuffer->addFrom(i, startPos, source.buffer, i, internalStart, internalLength);
 			xtrabuffer->addFrom(i, startPos, source.buffer, i, internalStart, internalLength);
         }
+#endif
     }
         
     specialBufferThumbnail->addBlock(0, *xtrabuffer, 0, workbuffer->getNumSamples());

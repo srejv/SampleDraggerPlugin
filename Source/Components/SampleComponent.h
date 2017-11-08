@@ -92,7 +92,7 @@ public:
 		resized();
 	}
 	// A [0,1],[0,1] grid, sort by x, apply y.
-	void paint(Graphics &g) { 
+	void paint(Graphics &g) override {
 		g.setColour(Colours::yellowgreen);
 
 		if (points.size() == 0) return;
@@ -116,10 +116,7 @@ public:
 			, 1.0f);
 	}
 
-	double samplePosition(double p) {
-	}
-
-	void resized() override {
+    void resized() override {
 		double w = static_cast<double>(getWidth()), h = static_cast<double>(getHeight());
 		for (auto* p : points) {
 			auto x = roundToInt(p->x * w) - 4;
@@ -158,6 +155,49 @@ public:
 		repaint();
 	}
 	OwnedArray<AutomationPoint> points;
+    
+    struct Ramp {
+        int numSamples;
+        double startGain;
+        double endGain;
+    };
+    
+    std::vector<Ramp>* getRamps(int nsamples) {
+        points.sort(comparer);
+        
+        ScopedPointer<std::vector<Ramp>> ramps = new std::vector<Ramp>();
+        
+        if(points.size() == 0) {
+            ramps->push_back({
+                nsamples, 1.0, 1.0
+            });
+            return ramps.release();
+        }
+        
+        const int n = points.size() - 1;
+        
+        ramps->push_back({
+            roundToInt(std::floor((points.getFirst()->x - startPoint->x) * nsamples)),
+            startPoint->y,
+            points.getFirst()->y
+        });
+        
+        for (int i = 0; i < n; ++i) {
+            ramps->push_back({
+                roundToInt(std::floor((points[i+1]->x - points[i]->x) * nsamples)),
+                points[i]->y,
+                points[i+1]->y
+            });
+        }
+        
+        ramps->push_back({
+            roundToInt(std::floor((endPoint->x - points.getLast()->x) * nsamples)),
+            points.getLast()->y,
+            endPoint->y
+        });
+        
+        return ramps.release();
+    }
 };
 
 class SampleBoundsContrainer : public ComponentBoundsConstrainer
@@ -324,7 +364,9 @@ public:
         return endTime;
     }
     
-    
+    std::vector<EnvelopeComponent::Ramp>* getRamps() {
+        return envelopeComponent->getRamps(getSampleLength());
+    }
 private:
 	SampleBoundsContrainer resizeContrain;
     ResizableBorderComponent resizeableEnd;
