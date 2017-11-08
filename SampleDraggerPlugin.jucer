@@ -22,6 +22,8 @@
         <FILE id="lMPGqx" name="Command.h" compile="0" resource="0" file="Source/Commands/Command.h"/>
       </GROUP>
       <GROUP id="{DE99F680-2232-B0A6-00BF-881FFA397D35}" name="Components">
+        <FILE id="SLQZzA" name="EnvelopeComponent.h" compile="0" resource="0"
+              file="Source/Components/EnvelopeComponent.h"/>
         <FILE id="aKruud" name="MyLookAndFeel.h" compile="0" resource="0" file="Source/Components/MyLookAndFeel.h"/>
         <FILE id="kailjc" name="SampleComponent.cpp" compile="1" resource="0"
               file="Source/Components/SampleComponent.cpp"/>
@@ -37,6 +39,8 @@
               file="Source/Helpers/AudioFileLoader.cpp"/>
         <FILE id="YJAVeV" name="AudioFileLoader.h" compile="0" resource="0"
               file="Source/Helpers/AudioFileLoader.h"/>
+        <FILE id="vpXimC" name="SampleBoundsContrainer.h" compile="0" resource="0"
+              file="Source/Helpers/SampleBoundsContrainer.h"/>
         <FILE id="Y1fzmw" name="SamplePool.h" compile="0" resource="0" file="Source/Helpers/SamplePool.h"/>
       </GROUP>
       <GROUP id="{27950F9F-A29B-FB92-A162-9D4CB843F3D8}" name="Models">
