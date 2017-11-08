@@ -16,12 +16,14 @@ SampleComponent::SampleComponent() : resizeableEnd(this, &resizeContrain)
 	resizeContrain.addListener(this);
 	addAndMakeVisible(remove = new TextButton("X"));
 	remove->addListener(this);
-
+	
+	// Remove handles from top and bottom
 	resizeableEnd.setBorderThickness(BorderSize<int>(0, 5, 0, 5));
     
     addAndMakeVisible(resizeableEnd);
 
 	addAndMakeVisible(envelopeComponent = new EnvelopeComponent());
+	envelopeComponent->setVisible(false); // Start invisible
 }
 
 void SampleComponent::resizeStarted() {

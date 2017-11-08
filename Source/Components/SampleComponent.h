@@ -86,8 +86,8 @@ public:
 		addAndMakeVisible(endPoint = new AutomationPoint(*this, 1.0, 0.0));
 		endPoint->setInterceptsMouseClicks(false, false);
 		
-		addAndMakeVisible(points.add(new AutomationPoint(0.0, 1.0)));
-		addAndMakeVisible(points.add(new AutomationPoint(1.0, 1.0)));
+		addAndMakeVisible(points.add(new AutomationPoint(*this, 0.0, 1.0)));
+		addAndMakeVisible(points.add(new AutomationPoint(*this, 1.0, 1.0)));
 
 		resized();
 	}
@@ -153,7 +153,7 @@ public:
 	
 	void addPoint(double clickComponentX, double clickComponentY) {
 		double w = static_cast<double>(getWidth()), h = static_cast<double>(getHeight());
-		addAndMakeVisible(points.add(new AutomationPoint(clickComponentX / w, 1.0 - (clickComponentY / h))));
+		addAndMakeVisible(points.add(new AutomationPoint(*this, clickComponentX / w, 1.0 - (clickComponentY / h))));
 		resized();
 		repaint();
 	}
