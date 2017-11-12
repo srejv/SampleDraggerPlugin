@@ -11,7 +11,7 @@
               pluginWantsMidiIn="1" pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0"
               pluginEditorRequiresKeys="0" pluginAUExportPrefix="SampleDraggerPluginAU"
               pluginRTASCategory="" aaxIdentifier="se.srejv.SampleDraggerPlugin"
-              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="5.1.2"
+              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="5.2.0"
               companyName="Meh">
   <MAINGROUP id="JGg8o7" name="SampleDraggerPlugin">
     <GROUP id="{F1A3365B-8BA2-A0D9-5395-86B5F9B23F68}" name="Resources">
@@ -22,8 +22,16 @@
         <FILE id="lMPGqx" name="Command.h" compile="0" resource="0" file="Source/Commands/Command.h"/>
       </GROUP>
       <GROUP id="{DE99F680-2232-B0A6-00BF-881FFA397D35}" name="Components">
+        <FILE id="ATNv2z" name="AutomationPoint.cpp" compile="1" resource="0"
+              file="Source/Components/AutomationPoint.cpp"/>
+        <FILE id="kt8AS3" name="AutomationPoint.h" compile="0" resource="0"
+              file="Source/Components/AutomationPoint.h"/>
+        <FILE id="Rk59Uu" name="EnvelopeComponent.cpp" compile="1" resource="0"
+              file="Source/Components/EnvelopeComponent.cpp"/>
         <FILE id="SLQZzA" name="EnvelopeComponent.h" compile="0" resource="0"
               file="Source/Components/EnvelopeComponent.h"/>
+        <FILE id="TANpcy" name="MyLookAndFeel.cpp" compile="1" resource="0"
+              file="Source/Components/MyLookAndFeel.cpp"/>
         <FILE id="aKruud" name="MyLookAndFeel.h" compile="0" resource="0" file="Source/Components/MyLookAndFeel.h"/>
         <FILE id="kailjc" name="SampleComponent.cpp" compile="1" resource="0"
               file="Source/Components/SampleComponent.cpp"/>

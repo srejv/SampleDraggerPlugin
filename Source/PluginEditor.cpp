@@ -17,61 +17,54 @@ SampleDraggerPluginAudioProcessorEditor::SampleDraggerPluginAudioProcessorEditor
     : AudioProcessorEditor (&p), processor (p)
 {
 	setLookAndFeel(&lookAndFeel);
-    
+
+	// Buttons
 	addAndMakeVisible(addSample = new TextButton("Load file -> Sound Pool"));
-    addSample->addListener(this);
-    addSample->addShortcut(loadSampleKey);
-    
+	addSample->addListener(this);
+	addSample->addShortcut(loadSampleKey);
+	addSample->setConnectedEdges(Button::ConnectedOnRight);
+
 	addAndMakeVisible(saveGenerated = new TextButton("Save Generated Sample"));
 	saveGenerated->addListener(this);
-    saveGenerated->addShortcut(saveKey);
-
-	addAndMakeVisible(pixelsToSeconds = new Slider());
-	pixelsToSeconds->setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxRight, false, 80, 20);
-	pixelsToSeconds->setRange(2.0f, 2000.0f);
-	pixelsToSeconds->setTextValueSuffix("px/s");
-	pixelsToSeconds->setValue(100.0f);
-	pixelsToSeconds->addListener(this);
-    
-    addAndMakeVisible(viewPosition = new Slider());
-    {
-        viewPosition->setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxRight, false, 80, 20);
-        viewPosition->setRange(0.0f, 120.0f);
-        viewPosition->setTextValueSuffix("s");
-        viewPosition->setValue(0.0f);
-        viewPosition->addListener(this);
-    }
-
-	addAndMakeVisible(scaleComponent = new ScaleComponent());
-    
-
+	saveGenerated->addShortcut(saveKey);
+	
 	addAndMakeVisible(generateWaveform = new TextButton("Generate"));
-    generateWaveform->addShortcut(genKey);
+	generateWaveform->addShortcut(genKey);
 	generateWaveform->addListener(this);
+	generateWaveform->setConnectedEdges(Button::ConnectedOnRight);
 
-	addAndMakeVisible(playButton = new TextButton("Play"));
+	addAndMakeVisible(playButton = new TextButton("Play/Pause"));
 	playButton->setClickingTogglesState(true);
-    playButton->addShortcut(playKey);
+	playButton->addShortcut(playKey);
 	playButton->addListener(this);
+	playButton->setConnectedEdges(Button::ConnectedOnLeft);
 
+	addAndMakeVisible(btnAddSprite = new TextButton("Add Sample"));
+	btnAddSprite->addListener(this);
+	btnAddSprite->addShortcut(addSpriteKey);
+	btnAddSprite->setConnectedEdges(Button::ConnectedOnRight | Button::ConnectedOnLeft);
+
+	addAndMakeVisible(btnClear = new TextButton("Clear"));
+	btnClear->addListener(this);
+	btnClear->setConnectedEdges(Button::ConnectedOnLeft);
+
+	addAndMakeVisible(autoGen = new TextButton("AutoGen"));
+	autoGen->setClickingTogglesState(true);
+	autoGen->addShortcut(autoGenKey);
+	autoGen->setConnectedEdges(Button::ConnectedOnRight | Button::ConnectedOnLeft);
+
+	// Combobboxes
 	addAndMakeVisible(comboSampleList = new ComboBox());
 	comboSampleList->setTextWhenNothingSelected("Select a to load");
 	comboSampleList->setTextWhenNoChoicesAvailable("Pool is empty");
 
-	addAndMakeVisible(btnAddSprite = new TextButton("Add Sample"));
-	btnAddSprite->addListener(this);
-    btnAddSprite->addShortcut(addSpriteKey);
-
-	startTimerHz(20);
-
-    
-    
-	addAndMakeVisible(autoGen = new TextButton("AutoGen"));
-	autoGen->setClickingTogglesState(true);
-    autoGen->addShortcut(autoGenKey);
+	// Scale component
+	addAndMakeVisible(scaleComponent = new ScaleComponent());
+	scaleComponent->addListener(this);
 
 	addKeyListener(this);
 
+	startTimerHz(20);
 	setSize(800, 600);
 }
 
@@ -83,7 +76,7 @@ SampleDraggerPluginAudioProcessorEditor::~SampleDraggerPluginAudioProcessorEdito
 
 	addSample = nullptr;
 	saveGenerated = nullptr;
-	pixelsToSeconds = nullptr;
+	//pixelsToSeconds = nullptr;
 	scaleComponent = nullptr;
 	generateWaveform = nullptr;
 	playButton = nullptr;
@@ -98,43 +91,42 @@ SampleDraggerPluginAudioProcessorEditor::~SampleDraggerPluginAudioProcessorEdito
 }
 
 //==============================================================================
-void SampleDraggerPluginAudioProcessorEditor::paint (Graphics& g)
-{
-	// (Our component is opaque, so we must completely fill the background with a solid colour)
+void SampleDraggerPluginAudioProcessorEditor::paint (Graphics& g) {
 	g.fillAll(findColour(ResizableWindow::backgroundColourId));
-    
-    //g.addTransform();
-
 	g.setColour(Colour(120, 120, 120));
 	if (specialBufferThumbnail != nullptr) {
-		double width = (processor.getNumSamples() / processor.getSampleRate()) * pixelsToSeconds->getValue();
-        auto area(getLocalBounds().removeFromBottom(120).withTrimmedBottom(40).withWidth(roundToInt(width)).withX(-viewPosition->getValue() * pixelsToSeconds->getValue()));
+		double width = (processor.getNumSamples() / processor.getSampleRate()) * scaleComponent->getPixelToSeconds();
+		auto area(getLocalBounds().removeFromTop(120).withTrimmedTop(40).withWidth(roundToInt(width)).withX(-scaleComponent->getViewPosition() * scaleComponent->getPixelToSeconds()));
 		drawWaveform(g, area);
+	}
+	else {
+		auto area(getLocalBounds().removeFromTop(120).withTrimmedTop(40));
+		g.setColour(Colour(36, 36, 36));
+		g.fillRect(area);
+		g.setColour(Colour(240, 240, 240));
+		g.drawRect(area, 1);
+		g.drawText("No buffer yet (Add samples to the workspace. Generate or ctrl+g/cmd+g)", area, Justification::centred);
 	}
 }
 
-void SampleDraggerPluginAudioProcessorEditor::resized()
-{
+void SampleDraggerPluginAudioProcessorEditor::resized() {
 	auto area(getLocalBounds());
 	
-	auto right = area.removeFromRight(100).withTrimmedBottom(20).withTrimmedBottom(20);
-	saveGenerated->setBounds(right.removeFromTop(20));
-	
-	right.removeFromTop(20);
-	addSample->setBounds(right.removeFromTop(80));
-	right.removeFromTop(20);
-	
-	comboSampleList->setBounds(right.removeFromTop(20));
-	btnAddSprite->setBounds(right.removeFromTop(20));
-	right.removeFromTop(20);
+	auto topButtonRow = area.removeFromTop(20);
 
-	generateWaveform->setBounds(right.removeFromTop(20));
-	autoGen->setBounds(right.removeFromTop(20));
-	playButton->setBounds(right.removeFromTop(20));
+	saveGenerated->setBounds(topButtonRow.removeFromRight(80));
+
+	addSample->setBounds(topButtonRow.removeFromLeft(60));
+	comboSampleList->setBounds(topButtonRow.removeFromLeft(160));
+	btnAddSprite->setBounds(topButtonRow.removeFromLeft(60));
+	btnClear->setBounds(topButtonRow.removeFromLeft(60));
 	
-	pixelsToSeconds->setBounds(area.removeFromBottom(20));
+	topButtonRow.removeFromLeft(20);
+	generateWaveform->setBounds(topButtonRow.removeFromLeft(60));
+	autoGen->setBounds(topButtonRow.removeFromLeft(60));
+	playButton->setBounds(topButtonRow.removeFromLeft(60));
+
 	scaleComponent->setBounds(area.removeFromTop(20));
-    viewPosition->setBounds(area.removeFromBottom(20));
 }
 
 void SampleDraggerPluginAudioProcessorEditor::drawWaveform(Graphics& g, const Rectangle<int>& thumbnailBounds)
@@ -154,43 +146,32 @@ void SampleDraggerPluginAudioProcessorEditor::drawWaveform(Graphics& g, const Re
 	specialBufferThumbnail->drawChannels(g, thumbnailBounds, startTime, endTime, verticalZoom);
     
     auto pposition = processor.getPosition() / processor.getSampleRate();
-    g.drawVerticalLine(roundToInt(pposition * pixelsToSeconds->getValue()), thumbnailBounds.getY(), thumbnailBounds.getBottom());
+    g.drawVerticalLine(roundToInt(pposition * scaleComponent->getPixelToSeconds()), thumbnailBounds.getY(), thumbnailBounds.getBottom());
     
     g.restoreState();
 }
-void SampleDraggerPluginAudioProcessorEditor::sliderValueChanged(Slider* slider)
-{
-    if(slider == pixelsToSeconds) {
-        for (auto s : sampleComponents) {
-            s->setPixelScale(slider->getValue());
-        }
-        scaleComponent->setPixelToSeconds(slider->getValue());
-    }
-    if(slider == viewPosition) {
-        scaleComponent->setViewPosition(slider->getValue());
-        for(auto s : sampleComponents) {
-            s->setTransform(AffineTransform::translation(-slider->getValue() * pixelsToSeconds->getValue(), 0.0f));
-        }
-        repaint();
-    }
-};
 
-void SampleDraggerPluginAudioProcessorEditor::buttonClicked(Button* btn)
-{
+void SampleDraggerPluginAudioProcessorEditor::buttonClicked(Button* btn) {
 	if (btn == addSample) {
 		openButtonClickedSoundPool();
 	}
-	if (btn == generateWaveform) {
+	else if (btn == generateWaveform) {
 		generateFinalBuffer();
 	}
-	if (btn == saveGenerated) {
+	else if (btn == saveGenerated) {
 		saveButtonClicked();
 	}
-	if (btn == playButton) {
+	else if (btn == playButton) {
 		processor.setPlaying(playButton->getToggleState());
 	}
-	if (btn == btnAddSprite) {
+	else if (btn == btnAddSprite) {
 		addSpriteButtonClicked();
+	}
+	else if (btn == btnClear) {
+		for (auto s : sampleComponents) {
+			removeChildComponent(s);
+		}
+		sampleComponents.clear();
 	}
 }
 
@@ -216,7 +197,7 @@ void SampleDraggerPluginAudioProcessorEditor::generateFinalBuffer() {
     workbuffer->clear();
     xtrabuffer->clear();
 
-    ScopedPointer< std::vector<EnvelopeComponent::Ramp>> ramps;
+    ScopedPointer< std::vector<Ramp>> ramps;
     
     for (auto s : sampleComponents) {
 		int index = s->getIndex();
@@ -248,20 +229,10 @@ void SampleDraggerPluginAudioProcessorEditor::generateFinalBuffer() {
             }
             rampAccumulator += r.numSamples;
         }
-        
-#if 0
-		for (int i = 0; i < s->getNumChannels(); ++i) {
-			auto internalStart = s->getInternalSampleStart();
-			auto internalLength = s->getSampleLength();
-			workbuffer->addFrom(i, startPos, source.buffer, i, internalStart, internalLength);
-			xtrabuffer->addFrom(i, startPos, source.buffer, i, internalStart, internalLength);
-        }
-#endif
     }
-        
-    specialBufferThumbnail->addBlock(0, *xtrabuffer, 0, workbuffer->getNumSamples());
-    processor.swapBuffer(workbuffer.release());
-    
+
+	specialBufferThumbnail->addBlock(0, *xtrabuffer, 0, workbuffer->getNumSamples());
+	processor.swapBuffer(workbuffer.release());
 }
 
 void SampleDraggerPluginAudioProcessorEditor::saveButtonClicked()
@@ -295,6 +266,7 @@ void SampleDraggerPluginAudioProcessorEditor::openButtonClickedSoundPool() {
 	int sampleIndex = loader.loadAudioFileIntoPool(processor.getSamplePool());
 	if (sampleIndex < 0) return;
 	comboSampleList->addItem(processor.getSamplePool().getSample(sampleIndex).name, sampleIndex + 1);
+	comboSampleList->setSelectedId(sampleIndex + 1, dontSendNotification);
 }
 
 void SampleDraggerPluginAudioProcessorEditor::addSpriteButtonClicked() {
@@ -316,15 +288,15 @@ void SampleDraggerPluginAudioProcessorEditor::addFromIndex(int sampleIndex) {
 	newsample->setName(s.name);
 	newsample->setIndex(sampleIndex);
 	newsample->setNumSamples(s.buffer.getNumSamples());
-	newsample->setPixelScale(pixelsToSeconds->getValue());
+	newsample->setPixelScale(scaleComponent->getPixelToSeconds());
     newsample->addListener(this);
+	newsample->setTopLeftPosition(0, 200);
 
 	addAndMakeVisible(sampleComponents.add(newsample.release()));
     for(auto s : sampleComponents) {
-        s->setPixelScale(pixelsToSeconds->getValue());
+        s->setPixelScale(scaleComponent->getPixelToSeconds());
     }
 }
-
 
 bool SampleDraggerPluginAudioProcessorEditor::keyPressed(const KeyPress& key, Component* originatingComponent)  {
 	ignoreUnused(originatingComponent);
@@ -336,10 +308,10 @@ bool SampleDraggerPluginAudioProcessorEditor::keyPressed(const KeyPress& key, Co
 		redo();
 		return true;
 	}
-    if (key == genKey) {
-        generateFinalBuffer();
-        return true;
-    }
+	if (key == genKey) {
+		generateFinalBuffer();
+		return true;
+	}
 	return false;
 }
 
@@ -369,4 +341,27 @@ void SampleDraggerPluginAudioProcessorEditor::sampleRemoved(SampleComponent* sam
 
 void SampleDraggerPluginAudioProcessorEditor::pushCmd(Command* cmd) {
 	cmds.set(++cmdIndex, cmd);
+}
+
+void SampleDraggerPluginAudioProcessorEditor::scaleChanged(ScaleComponent*, double newPixelToSeconds_, double viewPosition_) {
+	for (auto s : sampleComponents) {
+		s->setPixelScale(newPixelToSeconds_);
+		s->setTransform(AffineTransform::translation(-viewPosition_ * newPixelToSeconds_, 0.0f));
+	}
+	repaint();
+}
+
+void SampleDraggerPluginAudioProcessorEditor::sampleStartPointChanged(SampleComponent* caller, Command* cmd) {
+	ignoreUnused(caller);
+	pushCmd(cmd);
+}
+
+void SampleDraggerPluginAudioProcessorEditor::sampleEndPointChanged(SampleComponent* caller, Command* cmd) {
+	ignoreUnused(caller);
+	pushCmd(cmd);
+}
+
+void SampleDraggerPluginAudioProcessorEditor::timerCallback() {
+	if (autoGen->getToggleState()) { generateFinalBuffer(); }
+	repaint();
 }

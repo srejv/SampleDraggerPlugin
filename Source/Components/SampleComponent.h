@@ -54,7 +54,7 @@ public:
 	int getSampleStartPosition() const;
 	int getSampleLength() const;
 	int getNumChannels();
-    
+
     int getInternalSampleStart();
 
 	double getPixelScale() const;
@@ -80,7 +80,7 @@ public:
 		Point<double> from;
 		Point<double> to;
 	};
-	
+
 	struct SetStartCommand : public Command
 	{
 		SetStartCommand(SampleComponent* c, double from, double to) : c(c), from(from), to(to) { }
@@ -96,7 +96,7 @@ public:
 				c->setStart(from);
 			}
 		}
-		
+
 	private:
 		WeakReference<SampleComponent> c;
 		double from;
@@ -126,7 +126,7 @@ public:
 	};
 
 	void setPosition(const Point<double>& newPosition);
-    
+
     void setStart(double newStart) {
 		double fullWidth = (nsamples / sampleRate) * pixelToSeconds;
 		double newWidth = (nsamples / sampleRate) * pixelToSeconds * (endTime - newStart);
@@ -134,7 +134,7 @@ public:
 		auto xdiff = (startDiff * fullWidth) / pixelToSeconds;
 		position += xdiff;
 		startTime = newStart;
-		
+
 		setTopLeftPosition(roundToInt(position * pixelToSeconds), getY());
 		setSize(roundToInt(newWidth), getHeight());
     }
@@ -143,24 +143,22 @@ public:
         endTime = newEnd;
 		setSize(roundToInt(newWidth), getHeight());
     }
-    
+
     double getStartTime() {
         return startTime;
     }
     double getEndTime() {
         return endTime;
     }
-    
-    std::vector<EnvelopeComponent::Ramp>* getRamps() {
+
+    std::vector<Ramp>* getRamps() {
         return envelopeComponent->getRamps(getSampleLength());
     }
 private:
 	SampleBoundsContrainer resizeContrain;
-    ResizableBorderComponent resizeableEnd;
-   
+  ResizableBorderComponent resizeableEnd;
 
-    
-    double viewPosition = 0.0f;
+  double viewPosition = 0.0f;
 	double sampleRate = 48000.0;
 	ComponentDragger myDragger;
 
@@ -178,7 +176,7 @@ private:
 	int nsamples = 0;
 
 	double pixelToSeconds = 100.0f;
-    
+
     double startTime = 0.0f;
     double endTime = 1.0f;
 

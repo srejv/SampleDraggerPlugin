@@ -15,11 +15,11 @@ class MyLookAndFeel : public LookAndFeel_V4
 {
 public:
 	MyLookAndFeel() { setColourScheme(getMyColourScheme()); }
-	
+
 	static ColourScheme getMyColourScheme()
 	{
-		return { 
-			0xff1e1e1e, // windowBackground 
+		return {
+			0xff1e1e1e, // windowBackground
 			0xff303030, // widgetBackground,
 			0xff303030, // menuBackground,
 			0xfff0f0f0, // outline,
@@ -30,4 +30,7 @@ public:
 			0xfff0f0f0  // menuText
 		};
 	}
+
+	void drawComboBox(Graphics& g, int width, int height, bool,
+		int, int, int, int, ComboBox& box) override;
 };
