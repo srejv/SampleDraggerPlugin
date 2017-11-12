@@ -16,10 +16,10 @@
 class SampleDraggerPluginAudioProcessorEditor
 	: public AudioProcessorEditor
 	, public Button::Listener
-	, public Slider::Listener
 	, public Timer
 	, public SampleComponent::Listener
 	, public KeyListener
+	, public ScaleComponent::Listener
 {
 public:
 	SampleDraggerPluginAudioProcessorEditor (SampleDraggerPluginAudioProcessor&);
@@ -30,10 +30,7 @@ public:
 	void resized() override;
 
 	// Is this really needed?
-	void timerCallback() override { 
-		if (autoGen->getToggleState()) { generateFinalBuffer(); }
-		repaint(); 
-	}
+	void timerCallback() override;
 	
 	bool keyPressed(const KeyPress& key, Component* originatingComponent) override;
 	
@@ -42,21 +39,16 @@ public:
 	
 	void sampleMoved(SampleComponent* caller, Command* cmd) override;
 	void sampleRemoved(SampleComponent* sample) override;
-	void sampleStartPointChanged(SampleComponent* caller, Command* cmd) override {
-		ignoreUnused(caller);
-		pushCmd(cmd);
-	}
-	void sampleEndPointChanged(SampleComponent* caller, Command* cmd) override {
-		ignoreUnused(caller);
-		pushCmd(cmd);
-	}
+	void sampleStartPointChanged(SampleComponent* caller, Command* cmd) override;
+	void sampleEndPointChanged(SampleComponent* caller, Command* cmd) override;
 
 	void pushCmd(Command* cmd);
 
 private:
 	void drawWaveform(Graphics& g, const Rectangle<int>& thumbnailBounds);
 
-	void sliderValueChanged(Slider* slider) override;
+	void scaleChanged(ScaleComponent*, double newPixelToSeconds_, double viewPosition_) override;
+	
 	void buttonClicked(Button* btn) override;
 
 	void generateFinalBuffer();
@@ -73,14 +65,14 @@ private:
 
 	// UI
 	OwnedArray<SampleComponent> sampleComponents;
-	ScopedPointer<TextButton> addSample, generateWaveform, saveGenerated, playButton, autoGen;
+	ScopedPointer<TextButton> addSample, generateWaveform, saveGenerated, playButton, autoGen, btnClear;
 
 	ScopedPointer<ComboBox> comboSampleList;
 	ScopedPointer<TextButton> btnAddSprite;
 
 	ScopedPointer<AudioThumbnail> specialBufferThumbnail;
 
-	ScopedPointer<Slider> pixelsToSeconds, viewPosition;
+	//ScopedPointer<Slider> pixelsToSeconds, viewPosition;
 	ScopedPointer<ScaleComponent> scaleComponent;
 
 	MyLookAndFeel lookAndFeel;

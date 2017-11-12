@@ -16,8 +16,14 @@ SampleComponent::SampleComponent() : resizeableEnd(this, &resizeContrain)
 	resizeContrain.addListener(this);
 	addAndMakeVisible(remove = new TextButton("X"));
 	remove->addListener(this);
-    
+
+	// Remove handles from top and bottom
+	resizeableEnd.setBorderThickness(BorderSize<int>(0, 5, 0, 5));
+
     addAndMakeVisible(resizeableEnd);
+
+	addAndMakeVisible(envelopeComponent = new EnvelopeComponent());
+	envelopeComponent->setVisible(false); // Start invisible
 }
 
 void SampleComponent::resizeStarted() {
@@ -51,40 +57,42 @@ void SampleComponent::resizeEnded() {
 
 void SampleComponent::resized() {
 	remove->setBounds(getLocalBounds().removeFromTop(20).removeFromLeft(20));
-    resizeableEnd.setBounds(getLocalBounds());
-    
-    double fullWidth = (nsamples / sampleRate) * pixelToSeconds;
-    
-    if(resizeableEnd.isMouseOverOrDragging())
-    {
-        if(resizeableEnd.getCurrentZone().getZoneFlags() == 1)
-        {
-			auto xpos = getX() / pixelToSeconds;
-            auto diff = xpos - position;
-        
-            startTime += (diff * pixelToSeconds) / fullWidth;
-            if(startTime > endTime) {
-				startTime -= (diff * pixelToSeconds) / fullWidth;
-			}
-            
-			position = xpos;
-            
-            if(startTime < 0.0) {
-				endTime -= startTime;
-                startTime = 0.0;
-            }
-        }
-    
-        if(resizeableEnd.getCurrentZone().getZoneFlags() == 4)
-        {
-            endTime = (static_cast<double>(getWidth()) / fullWidth) + startTime;
-            
-            if(endTime > 1.0) {
-				startTime -= endTime - 1.0;
-                endTime = 1.0;
-            }
-        }
-    }
+  resizeableEnd.setBounds(getLocalBounds());
+
+  double fullWidth = (nsamples / sampleRate) * pixelToSeconds;
+
+  if(resizeableEnd.isMouseOverOrDragging())
+  {
+      if(resizeableEnd.getCurrentZone().getZoneFlags() == 1)
+      {
+		auto xpos = getX() / pixelToSeconds;
+          auto diff = xpos - position;
+
+          startTime += (diff * pixelToSeconds) / fullWidth;
+          if(startTime > endTime) {
+			startTime -= (diff * pixelToSeconds) / fullWidth;
+		}
+
+		position = xpos;
+
+          if(startTime < 0.0) {
+			endTime -= startTime;
+              startTime = 0.0;
+          }
+      }
+
+      if(resizeableEnd.getCurrentZone().getZoneFlags() == 4)
+      {
+          endTime = (static_cast<double>(getWidth()) / fullWidth) + startTime;
+
+          if(endTime > 1.0) {
+			startTime -= endTime - 1.0;
+              endTime = 1.0;
+          }
+      }
+  }
+
+	envelopeComponent->setBounds(getLocalBounds());
 }
 
 void SampleComponent::setThumbnail(AudioThumbnail* newThumbnail) {
@@ -112,15 +120,16 @@ void SampleComponent::setPixelScale(double pts) {
     pixelToSeconds = pts;
 
     auto mw = (nsamples / sampleRate) * pixelToSeconds;
-    resizeContrain.setMaximumWidth(mw);
+    resizeContrain.setMaximumWidth(roundToInt(mw));
     resizeContrain.setMinimumWidth(1);
     resizeContrain.setMinimumHeight(getHeight());
     resizeContrain.setMaximumHeight(getHeight());
-    
+		resizeContrain.setMinimumOnscreenAmounts(0,0,0,0);
+
     double width = (nsamples / sampleRate) * pixelToSeconds * (endTime - startTime);
-    
+
     setSize(jmax(1, roundToInt(width)), 80);
-    
+
     setTopLeftPosition(roundToInt(position * pixelToSeconds), getY());
     repaint();
 }
@@ -141,7 +150,7 @@ void SampleComponent::paint(Graphics& g) {
     g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::defaultText));
     g.drawText(getName(), getLocalBounds(), Justification::centred);
 
-    
+
   g.setColour(colourScheme.getUIColour(LookAndFeel_V4::ColourScheme::outline));
   g.drawRect(getLocalBounds());
 }
@@ -167,9 +176,13 @@ void SampleComponent::mouseDown(const MouseEvent& e) {
         PopupMenu menu;
         menu.addItem(1, String(startTime));
         menu.addItem(2, String(endTime));
-        
-        menu.show();
-        
+		menu.addItem(3, "Edit Envelope", true, envelopeComponent->isVisible());
+
+        auto result = menu.show();
+		if (result == 3) {
+			envelopeComponent->setVisible(!envelopeComponent->isVisible());
+		}
+
         return;
     }
 	moveFrom = getPosition().toFloat();
@@ -183,10 +196,10 @@ void SampleComponent::mouseDrag(const MouseEvent& e)
 	position = getX() / pixelToSeconds;
 }
 
-void SampleComponent::mouseUp(const MouseEvent& e)
+void SampleComponent::mouseUp(const MouseEvent&)
 {
-	ScopedPointer<Command> cmd = new MovePositionCommand(this, 
-		{ positionMoveFrom, moveFrom.getY() }, 
+	ScopedPointer<Command> cmd = new MovePositionCommand(this,
+		{ positionMoveFrom, moveFrom.getY() },
 		{ position, static_cast<double>(getY()) });
 	listeners.call(&SampleComponent::Listener::sampleMoved, this, cmd.release());
 }

@@ -1,11 +1,11 @@
 #include "AudioFileLoader.h"
 
-AudioFileLoader::AudioFileLoader() : cache(20) {
+AudioFileLoader::AudioFileLoader() : cache(50) {
   formatManager.registerBasicFormats();
 }
 
 AudioThumbnail* AudioFileLoader::createThumbnail() {
-  return new AudioThumbnail(1024, formatManager, cache);
+  return new AudioThumbnail(128, formatManager, cache);
 }
 
 MySample* AudioFileLoader::loadAudioFile() {
